@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.BankConfigMapper">
+
+
+	<select id="getBankList" resultType="java.util.Map" >
+		select tbc.ID , tbc.BankName as bankName , tbc.BankUrl as bankUrl , tbc.BankStatus as bankStatus , tcar.count from tab_bank_config as tbc LEFT JOIN
+		(select BankID , count(1) as count  from tab_card_apply_record  GROUP BY BankID ) as tcar on tbc.ID=tcar.BankID
+		 where BankStatus = 1
+	</select>
+
+
+	<select id="getBanConfigInfo" resultType="com.rhjf.account.modle.domain.salesman.BankConfig" >
+		select * from tab_bank_config where ID=#{ID}
+	</select>
+
+</mapper>

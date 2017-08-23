@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.YMFQRCodeMapper">
+
+
+
+	<!-- 获取固定码信息 -->
+	<select id="getQRCodeBindInfo" parameterType="java.lang.String" resultType="com.rhjf.account.modle.domain.salesman.YMFQRCode">
+
+		select * from tab_ymf_qrcode where Code=#{code}
+
+	</select>
+
+
+	<select id="userYMFlist" parameterType="java.util.Map" resultType="com.rhjf.account.modle.domain.salesman.YMFQRCode">
+		select * from tab_ymf_qrcode where UserID=#{userID} and TradeCode=#{tradeCode}
+	</select>
+
+
+
+
+
+	<!-- 更新绑定信息 -->
+	<update id="updateBindedInfo" parameterType="com.rhjf.account.modle.domain.salesman.YMFQRCode">
+		update tab_ymf_qrcode set UserID=#{userID} , Binded=#{binded} , BindedDate=#{bindedDate} , TradeCode=#{tradeCode}
+		, Rate=#{rate} , SettlementRate=#{settlementRate} where Code=#{code}
+
+	</update>
+
+</mapper>

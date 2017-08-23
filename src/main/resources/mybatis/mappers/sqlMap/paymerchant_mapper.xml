@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.PayMerchantMapper">
+
+
+
+	<insert  id="saveMerchantInfo"  parameterType="java.util.List" >
+		insert into tab_pay_merchant (MerchantID,MerchantName,UserTime,SignKey,DESKey,QueryKey,UserID,PayType,AlipaySignKey)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(#{item.merchantID}, #{item.merchantName},now(),#{item.signKey} ,#{item.dESKey}  ,#{item.queryKey} ,
+			#{item.userID} ,#{item.payType} ,#{item.alipaySignKey})
+		</foreach>
+
+	</insert>
+</mapper>

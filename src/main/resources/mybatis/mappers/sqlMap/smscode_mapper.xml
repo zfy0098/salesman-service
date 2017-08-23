@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.SMSCodeMapper">
+
+	
+	<insert id="insertSmsCode" parameterType="java.util.Map">
+		insert into tab_smscode(ID,phoneNum,smsCode) values
+		( #{id} ,#{phone},#{smsCode})
+	</insert>
+
+	<select id="getSmsCode" parameterType="java.lang.String" resultType="java.util.Map">
+		select * from tab_smscode where phoneNum=#{loginID} order by insertTime desc limit 1
+	</select>
+
+
+	<delete id="delSmsCode" parameterType="java.lang.String" >
+		delete from tab_smscode where phoneNum=#{loginID}
+
+	</delete>
+</mapper>

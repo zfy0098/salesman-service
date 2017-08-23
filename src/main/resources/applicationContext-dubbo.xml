@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans        
+	http://www.springframework.org/schema/beans/spring-beans.xsd        
+	http://code.alibabatech.com/schema/dubbo        
+	http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+	<!-- 提供方应用信息，用于计算依赖关系 -->
+	<dubbo:application name="salesman-service" />
+
+	<!-- 使用multicast广播注册中心暴露服务地址 -->
+	<!-- <dubbo:registry address="multicast://224.5.6.7:1234" /> -->
+
+	<!-- 使用zookeeper注册中心暴露服务地址 -->
+	<dubbo:registry protocol="zookeeper" address="${dubbo.registry.address}"
+		id="zookeeperClient" />
+	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
+
+	<!-- 扫描注解包路径，多个包用逗号分隔，不填pacakge表示扫描当前ApplicationContext中所有的类 -->
+	<dubbo:annotation package="com.rhjf.salesman.core.service"/> 
+	
+	<!-- 声明需要暴露的服务接口    timeout="100000" version="1.0"-->
+	<!-- 用户管理接口 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.LoginService" ref="loginService"  version="1.0" />
+  	<bean id="loginService" class="com.rhjf.salesman.service.service.LoginServiceImpl"></bean> 
+
+
+	<!-- 业务员基本信息 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.SalesManService" ref="salesManService" version="1.0" />
+	<bean id="salesManService" class="com.rhjf.salesman.service.service.SalesManServiceImpl" ></bean>
+
+
+	<!-- 业务员收益信息 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.SalesManProfitService" ref="salesManProfitService" version="1.0" />
+	<bean id="salesManProfitService" class="com.rhjf.salesman.service.service.SalesManProfitServiceImpl" ></bean>
+
+
+	<!-- 公告信息 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.SalesManBulletinService" ref="salesManBulletinService" version="1.0"/>
+	<bean id="salesManBulletinService" class="com.rhjf.salesman.service.service.SalesManBulletinServiceImpl"></bean>
+
+
+	<dubbo:service interface="com.rhjf.salesman.core.service.SalesManADListService" ref="salesManADListService" version="1.0"/>
+	<bean id="salesManADListService" class="com.rhjf.salesman.service.service.SalesManADListServiceImpl"></bean>
+
+
+	<!-- 信用卡功能接口 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.CreaditCardService" ref="creaditCardService" version="1.0" />
+	<bean id="creaditCardService" class="com.rhjf.salesman.service.service.CreaditCardServiceImpl"></bean>
+
+
+	<!-- 登录后返回基本信息 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.IndexService" ref="indexService" version="1.0"/>
+	<bean id="indexService" class="com.rhjf.salesman.service.service.IndexServiceImpl" ></bean>
+
+
+	<!--  银行卡信息 　-->
+	<dubbo:service interface="com.rhjf.salesman.core.service.BankCodeService" ref="bankCodeService" version="1.0" />
+	<bean id="bankCodeService" class="com.rhjf.salesman.service.service.BankCodeServiceImpl" ></bean>
+
+
+	<!-- 商户功能 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.MerchantService" ref="merchantService" version="1.0" />
+	<bean id="merchantService" class="com.rhjf.salesman.service.service.MerchantServiceImpl" ></bean>
+
+
+	<!-- 短信验证码 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.SmsApplyService" ref="smsApplyService" version="1.0" />
+	<bean id="smsApplyService" class="com.rhjf.salesman.service.service.SmsApplyServiceImpl" ></bean>
+
+
+	<!-- 测试接口 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.TestService" ref="testService" version="1.0" />
+	<bean id="testService" class="com.rhjf.salesman.service.service.TestServiceImpl" ></bean>
+
+
+
+	<!--  固定码接口 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.QRCodeService" ref="QRCodeService" version="1.0" />
+	<bean id="QRCodeService" class="com.rhjf.salesman.service.service.QRCodeServiceImpl" ></bean>
+
+</beans>

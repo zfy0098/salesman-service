@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.SalesmanMapper">
+
+
+	<update id="updateSalesmanInfo" parameterType="com.rhjf.account.modle.domain.salesman.Salesman">
+		UPDATE  tab_salesman set AccountNo=#{accountNo} , PhoneNumber=#{phoneNumber} ,
+		BankName=#{bankName} , CardName=#{cardName} , BankSybol=#{bankSybol} where ID=#{ID}
+	</update>
+	
+	<select id="salesmanInfo" parameterType="java.lang.String" resultType="com.rhjf.account.modle.domain.salesman.Salesman">
+		select ID , AgentID , SalesName , SalesCardID , BankName , AccountNo ,
+		 case CardName when 'DEBIT_CARD' then '储蓄卡' else '信用卡' end as  CardName ,PhoneNumber ,
+		 FeeRate , T0FeeRate , SalesStatus , RegisterDate , BankSybol
+		 from tab_salesman where ID=#{ID};
+	</select>
+	
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+	<!DOCTYPE mapper
+			PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+			"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	<mapper namespace="com.rhjf.salesman.service.mapper.UserConfigMapper">
+
+
+		<insert id="addMerchantConfig" parameterType="java.util.List" >
+
+			insert into tab_user_config (ID,UserID,PayChannel,SaleAmountMax,SaleAmountMaxDay,T1SaleRate,T0SaleRate,T1SettlementRate,T0SettlementRate)
+			values
+			<foreach collection="list" item="item" index="index" separator=",">
+				(#{item.ID}, #{item.userID},#{item.payChannel},#{item.saleAmountMax} ,#{item.saleAmountMaxDay}  ,#{item.t1SaleRate} ,
+				#{item.t0SaleRate} ,#{item.t1SettlementRate} ,#{item.t0SettlementRate} )
+			</foreach>
+
+		</insert>
+
+
+		<select id="getUserConfig" parameterType="com.rhjf.account.modle.domain.salesman.UserConfig" resultType="com.rhjf.account.modle.domain.salesman.UserConfig">
+			select * from tab_user_config where UserID=#{userID} and PayChannel=#{payChannel}
+		</select>
+
+
+
+		<update id="updateUserConfig" parameterType="com.rhjf.account.modle.domain.salesman.UserConfig" >
+			update tab_user_config set T1SettlementRate=#{t1SettlementRate}  ,  T0SettlementRate=#{t0SettlementRate} where UserID=#{userID}
+		</update>
+
+	</mapper>

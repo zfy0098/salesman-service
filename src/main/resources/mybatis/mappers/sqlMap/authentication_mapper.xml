@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.AuthenticationMapper">
+
+
+	<!-- 查询改银行卡号是否被鉴权过 -->
+	<select id="bankAuthenticationInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
+		select * from tab_authentication where BankCardNo=#{BankCardNo} and RespCode=00
+	</select>
+
+
+	<!-- 添加鉴权信息 -->
+	<insert id="addAuthencationInfo" parameterType="java.util.Map" >
+		insert into tab_authentication (ID , IdNumber  , RealName , BankCardNo , RespCode , RespDesc)
+		values (#{ID} , #{IdNumber} , #{RealName} ,#{BankCardNo} , #{RespCode} , #{RespDesc} )
+	</insert>
+
+</mapper>

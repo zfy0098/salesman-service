@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.CardApplyRecordMapper">
+
+
+	<select id="findCardApplyRecord" parameterType="java.util.Map" resultType="java.util.Map" >
+
+		select * from tab_card_apply_record
+		where BankID=#{BankID} and ApplicantIDCardNo=#{ApplicantIDCardNo} and CreateTime>#{CreateTime}
+
+    </select>
+
+
+	<insert id="insertCardApplyRecord" parameterType="java.util.HashMap">
+		insert into tab_card_apply_record(ID,ApplicantIDCardNo,ApplicantPhone,ApplicantName,UserID,OrganID,CreateTime,BankID)
+		values (#{ID},#{ApplicantIDCardNo},#{ApplicantPhone},#{ApplicantName},#{UserID},#{OrganID},#{CreateTime},#{BankID})
+	</insert>
+
+
+
+</mapper>

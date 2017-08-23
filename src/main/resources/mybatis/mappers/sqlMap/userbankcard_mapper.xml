@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.UserBankCardMapper">
+
+
+	<insert id="addMerchantBankCardInfo" parameterType="com.rhjf.account.modle.domain.salesman.UserBankCard">
+		insert into tab_pay_userbankcard (ID,UserID,AccountName,AccountNo,BankBranch,BankProv,BankCity,
+		BankCode,BankName,SettleCreditCard,SettleBankType) 
+		values 
+		(#{ID},#{userID},#{accountName},#{accountNo},#{bankBranch},#{bankProv},#{bankCity},
+		#{bankCode},#{bankName},#{settleCreditCard},#{settleBankType})
+	</insert>
+
+
+
+	<select id="getBankName" parameterType="java.lang.String" resultType="java.util.HashMap">
+
+		SELECT bankName , case cardName when 'DEBIT_CARD' then '储蓄卡' else '信用卡' end as cardName
+		FROM tab_pay_binverify where SUBSTRING(#{bankCardNo},1,verifyLength)=verifyCode;
+
+	</select>
+
+	<!-- 为商户添加信用卡信息 -->
+	<update id="addCreditCardNo" parameterType="com.rhjf.account.modle.domain.salesman.UserBankCard">
+		update tab_pay_userbankcard set SettleCreditCard=#{settleCreditCard} where UserID=#{userID}
+	</update>
+
+
+	<!-- 获取商户结算卡信息 -->
+	<select id="getUserBankCardInfo" parameterType="java.lang.String" resultType="com.rhjf.account.modle.domain.salesman.UserBankCard">
+		select * from tab_pay_userbankcard where UserID=#{userID}
+	</select>
+</mapper>
