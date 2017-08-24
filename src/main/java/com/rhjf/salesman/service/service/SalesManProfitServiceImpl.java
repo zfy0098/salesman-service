@@ -6,6 +6,7 @@ import com.rhjf.salesman.core.constants.RespCode;
 import com.rhjf.salesman.core.service.SalesManProfitService;
 import com.rhjf.salesman.core.util.DateUtil;
 import com.rhjf.salesman.service.mapper.SalesManProfitMapper;
+import com.sun.org.apache.regexp.internal.RE;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.xml.sax.helpers.ParserAdapter;
 
 import java.util.*;
 
@@ -66,7 +68,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
         map.put("toDay", toDay);
         map.put("salesManID", user.getSalesManID());
 
-        List<Map<String, String>> list = salesManProfitMapper.profitDetailByToDay(map);
+        List<Map<String, String>> list = salesManProfitMapper.profitDetailByDay(map);
 
         paramter.setList(JSONArray.fromObject(list).toString());
         paramter.setRespCode(RespCode.SUCCESS[0]);
@@ -81,10 +83,9 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
      *
      * @return
      */
-    public ParamterData profitDetailByToDayCurve(LoginUser user, ParamterData paramter) {
+    public ParamterData profitDetailByToDayCurve(LoginUser user, ParamterData paramter){
 
         String tradeDate = paramter.getTradeDate();
-
         StringBuffer sbf = new StringBuffer(tradeDate);
 
         sbf.insert(4,"-");
@@ -107,28 +108,45 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
             map.clear();
             map.put("salesManID" ,user.getID());
-            map.put("date" , sbf.toString());
+            map.put("tradeDate" , sbf.toString());
 
             Map<String, String> salesManProfit = salesManProfitMapper.profitTotalByDay(map);
 
+
+            if(salesManProfit == null || salesManProfit.isEmpty()){
+                salesManProfit = new HashMap<>();
+                salesManProfit.put("amount" , "0");
+                salesManProfit.put("distributeProfit" , "0") ;
+                salesManProfit.put("profit" , "0");
+                salesManProfit.put("LocalDate" , tradeDate);
+            }
+
+
+
+            log.info("当天的收益数据：" + JSONObject.fromObject(salesManProfit).toString());
+
             if(tradeDate.equals(DateUtil.getNowTime(DateUtil.yyyyMMdd))){
-                // TotalProfit as amount , CONCAT(EarningsDate,'') as LocalDate
                 map.clear();
-                map.put("amount" ,String.valueOf(Integer.parseInt(salesManProfit.get("distributeProfit")) + Integer.parseInt(salesManProfit.get("profit"))));
-                map.put("LocalDate" , DateUtil.getNowTime(DateUtil.yyyy_MM_dd));
+                map.put("amount" ,salesManProfit.get("amount"));
+                map.put("LocalDate" , DateUtil.getNowTime(DateUtil.yyyyMMdd));
                 list.add(map);
             }
 
-            paramter.setDistributeProfit(salesManProfit.get("distributeProfit"));
-            paramter.setProfit(salesManProfit.get("profit"));
-            paramter.setProfitTotal(String.valueOf(Integer.parseInt(salesManProfit.get("distributeProfit")) + Integer.parseInt(salesManProfit.get("profit"))));
+            log.info("折线数据:" + JSONArray.fromObject(list).toString());
+
+            paramter.setDistributeProfit(String.valueOf(salesManProfit.get("distributeProfit")));
+            paramter.setProfit(String.valueOf(salesManProfit.get("profit")));
+            paramter.setProfitTotal(salesManProfit.get("amount"));
 
             paramter.setList(JSONArray.fromObject(list).toString());
             paramter.setRespCode(RespCode.SUCCESS[0]);
             paramter.setRespDesc(RespCode.SUCCESS[1]);
         }catch (Exception e){
 
-            e.printStackTrace();
+            log.info("查询折线数据出现异常：" + e.getMessage());
+            log.error("查询折线数据出现异常" , e);
+            paramter.setRespCode(RespCode.NETWORKError[0]);
+            paramter.setRespDesc(RespCode.NETWORKError[1]);
         }
         return paramter;
     }

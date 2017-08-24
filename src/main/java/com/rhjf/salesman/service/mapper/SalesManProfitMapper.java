@@ -22,13 +22,21 @@ public interface SalesManProfitMapper {
     public Map<String, String> profitTotal(String salesManID);
 
 
+
     /**
-     *  查询指定日期的收益总和
-     **/
+     *   查询当天收益总和
+     * @param map
+     * @return
+     */
     public Map<String, String> profitTotalByDay(Map map);
 
 
-    public List<Map<String, String>> profitDetailByToDay(Map map);
+    /**
+     *   查询收益明细显示某天
+     * @param map
+     * @return
+     */
+    public List<Map<String, String>> profitDetailByDay(Map map);
 
 
     public List<Map<String, String>> profitDetailByDayCurve(Map<String, String> map);
