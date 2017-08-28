@@ -6,10 +6,13 @@ import com.rhjf.account.modle.domain.salesman.Salesman;
 import com.rhjf.salesman.core.constants.Constants;
 import com.rhjf.salesman.core.constants.RespCode;
 import com.rhjf.salesman.core.service.IndexService;
+import com.rhjf.salesman.core.util.DateJsonValueProcessor;
 import com.rhjf.salesman.core.util.DateUtil;
 import com.rhjf.salesman.service.mapper.SalesManProfitMapper;
 import com.rhjf.salesman.service.mapper.SalesmanMapper;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +54,12 @@ public class IndexServiceImpl implements IndexService{
         Salesman salesman = salesmanMapper.salesmanInfo(user.getSalesManID());
 
 
+        JsonConfig jsonConfig = new JsonConfig();
+        jsonConfig.registerJsonValueProcessor(Date.class, new DateJsonValueProcessor(DateUtil.yyyy_MM_dd));
+        JSONObject jo = JSONObject.fromObject(salesman,jsonConfig);
 
-        paramter.setList(JSONObject.fromObject(salesman).toString());
+
+        paramter.setList(jo.toString());
 
 
         SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.yyyy_MM_dd);

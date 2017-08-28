@@ -19,9 +19,6 @@
 	</select>
 
 
-
-
-
 	<!-- 更新绑定信息 -->
 	<update id="updateBindedInfo" parameterType="com.rhjf.account.modle.domain.salesman.YMFQRCode">
 		update tab_ymf_qrcode set UserID=#{userID} , Binded=#{binded} , BindedDate=#{bindedDate} , TradeCode=#{tradeCode}

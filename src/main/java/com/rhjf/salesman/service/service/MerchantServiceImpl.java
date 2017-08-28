@@ -11,7 +11,6 @@ import com.rhjf.salesman.service.util.auth.Author;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.http.auth.AUTH;
-import org.apache.zookeeper.Login;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +101,23 @@ public class MerchantServiceImpl implements MerchantService {
                 return paramter;
             }
 
+            boolean flag = UtilsConstant.checkMerchantName(paramter.getMerchantName());
+            if(flag){
+
+                log.info("用户："+ user.getLoginID() + "商户名不合法," + paramter.getMerchantName());
+
+                paramter.setRespDesc(RespCode.MerchantNameError[0]);
+                paramter.setRespDesc(RespCode.MerchantNameError[1]);
+                return paramter;
+            }
+
+            Map<String,String> BKmap = bankCodeMapper.bankBinMap(paramter.getBankCardNo());
+            if(BKmap!=null&&"CREDIT_CARD".equals(UtilsConstant.ObjToStr(BKmap.get("cardName")))){
+                log.info("用户：" +  paramter.getMerchantLoginID() + "填写的结算账号为信用卡, 卡号为：" +  paramter.getBankCardNo());
+                paramter.setRespCode(RespCode.AccountNoError[0]);
+                paramter.setRespDesc(RespCode.AccountNoError[1]);
+                return paramter;
+            }
 
             //逻辑代码，可以写上你的逻辑处理代码
             String uuid = UtilsConstant.getUUID();
@@ -280,66 +296,63 @@ public class MerchantServiceImpl implements MerchantService {
             log.info("用户" + merchantInfo.getLoginID() + "入网请求报文:" + merchantInMap.toString());
 
 
-//            JSONObject respJS = null;
-//            String respCode = null;
-//            try {
-//                String content = HttpClient.post(Constants.REPORT_URL, merchantInMap, null);
-//                log.info("用户" + merchantInfo.getLoginID() + "入网响应报文:" + content);
-//
-//                respJS = JSONObject.fromObject(content);
-//                respCode = respJS.getString("respCode");
-//            } catch (Exception e) {
-//
-//                log.info(user.getLoginID() + "入网异常：" + e.getMessage());
-//                log.error("新增商户" + merchantInfo.getLoginID() + "入网异常:", e);
-//
-//                flag = true;
-//
-//                paramter.setRespCode("01");
-//                paramter.setRespDesc("信息已完善，等待进一步审核");
-//            }
+            JSONObject respJS = null;
+            String respCode = null;
+            try {
+                String content = HttpClient.post(Constants.REPORT_URL, merchantInMap, null);
+                log.info("用户" + merchantInfo.getLoginID() + "入网响应报文:" + content);
+
+                respJS = JSONObject.fromObject(content);
+                respCode = respJS.getString("respCode");
+            } catch (Exception e) {
+
+                log.info(user.getLoginID() + "入网异常：" + e.getMessage());
+                log.error("新增商户" + merchantInfo.getLoginID() + "入网异常:", e);
+
+                paramter.setRespCode("01");
+                paramter.setRespDesc("失败,请稍后再试");
+            }
 
             if (Constants.payRetCode.equals("0000")) {
 
                 log.info("商户：" + paramter.getMerchantLoginID() + "在平台入网成功,保存商户秘钥等信息");
 
-//                String merchantNo = respJS.getString("merchantNo");// 商户号
-//                String signKey = respJS.getString("signKey");        //  微信签名秘钥
-//                String desKey = respJS.getString("desKey");            //  微信des秘钥
-//                String queryKey = respJS.getString("queryKey");        //  查询秘钥
-//
-//                String AlipaySignKey = respJS.getString("AlipaySignKey");    // 支付宝签名秘钥
-//                String AlipaydesKey = respJS.getString("AlipaydesKey");        // 支付des秘钥
-//
-//                /**
-//                 *  保存商户通道商编和密码信息
-//                 */
-//                List<PayMerchant> list = new ArrayList<PayMerchant>();
-//
-//                PayMerchant payMerchant = new PayMerchant();
-//                payMerchant.setMerchantID(merchantNo);
-//                payMerchant.setMerchantName(merchantInfo.getMerchantName());
-//                payMerchant.setSignKey(signKey);
-//                payMerchant.setDESKey(desKey);
-//                payMerchant.setQueryKey(queryKey);
-//                payMerchant.setUserID(merchantInfo.getID());
-//                payMerchant.setPayType(Constants.PayChannelWXScancode);
-//
-//                list.add(payMerchant);
-//
-//                payMerchant = new PayMerchant();
-//                payMerchant.setMerchantID(merchantNo);
-//                payMerchant.setMerchantName(merchantInfo.getMerchantName());
-//                payMerchant.setSignKey(AlipaySignKey);
-//                payMerchant.setDESKey(AlipaydesKey);
-//                payMerchant.setQueryKey(queryKey);
-//                payMerchant.setUserID(merchantInfo.getID());
-//                payMerchant.setPayType(Constants.payChannelAliScancode);
-//
-//                list.add(payMerchant);
-//
-//                payMerchantMapper.saveMerchantInfo(list);
+                String merchantNo = respJS.getString("merchantNo");// 商户号
+                String signKey = respJS.getString("signKey");        //  微信签名秘钥
+                String desKey = respJS.getString("desKey");            //  微信des秘钥
+                String queryKey = respJS.getString("queryKey");        //  查询秘钥
 
+                String AlipaySignKey = respJS.getString("AlipaySignKey");    // 支付宝签名秘钥
+                String AlipaydesKey = respJS.getString("AlipaydesKey");        // 支付des秘钥
+
+                /**
+                 *  保存商户通道商编和密码信息
+                 */
+                List<PayMerchant> list = new ArrayList<PayMerchant>();
+
+                PayMerchant payMerchant = new PayMerchant();
+                payMerchant.setMerchantID(merchantNo);
+                payMerchant.setMerchantName(merchantInfo.getMerchantName());
+                payMerchant.setSignKey(signKey);
+                payMerchant.setDESKey(desKey);
+                payMerchant.setQueryKey(queryKey);
+                payMerchant.setUserID(merchantInfo.getID());
+                payMerchant.setPayType(Constants.PayChannelWXScancode);
+
+                list.add(payMerchant);
+
+                payMerchant = new PayMerchant();
+                payMerchant.setMerchantID(merchantNo);
+                payMerchant.setMerchantName(merchantInfo.getMerchantName());
+                payMerchant.setSignKey(AlipaySignKey);
+                payMerchant.setDESKey(AlipaydesKey);
+                payMerchant.setQueryKey(queryKey);
+                payMerchant.setUserID(merchantInfo.getID());
+                payMerchant.setPayType(Constants.payChannelAliScancode);
+
+                list.add(payMerchant);
+
+                payMerchantMapper.saveMerchantInfo(list);
 
                 log.info("保存新增商户：" + paramter.getMerchantLoginID() + "基本信息");
                 loginMapper.addMerchant(merchantInfo);
@@ -354,9 +367,9 @@ public class MerchantServiceImpl implements MerchantService {
                 paramter.setRespDesc(RespCode.SUCCESS[1]);
 
             } else {
-//                if (respJS.has("respMsg")) {
-//                    respMsg = respJS.getString("respMsg");
-//                }
+                if (respJS.has("respMsg")) {
+                    respMsg = respJS.getString("respMsg");
+                }
                 log.info(user.getLoginID() + "入网异常：上游报备失败 , " + respMsg);
 
                 paramter.setRespCode("01");
@@ -755,5 +768,4 @@ public class MerchantServiceImpl implements MerchantService {
         }
         return false;
     }
-
 }

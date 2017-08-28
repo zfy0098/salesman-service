@@ -11,6 +11,7 @@
 		</if>
 	</select>
 
+	<!--  更新用户登录信息 -->
 	<update id="updateUserLoginInfo" parameterType="com.rhjf.account.modle.domain.salesman.LoginUser" >
 		update tab_loginuser set LastLoginTime=#{lastLoginTime} , LoginPSN=#{loginPSN} where LoginID=#{loginID}
 	</update>
@@ -50,7 +51,8 @@
 
 	<!-- 查询某一个商户可以为业务员增加收益的拓客数量 -->
 	<select id="merchantTokerCount" parameterType="java.util.Map" resultType="java.lang.Integer" >
-		  select count(1) as count from tab_loginuser where (ThreeLevel=#{merchantID} and TwoLevel=#{UserID}) or (TwoLevel=#{merchantID} and OneLevel=#{UserID});
+		  select count(1) as count from tab_loginuser where (ThreeLevel=#{merchantID} and TwoLevel=#{UserID}) or
+		  (TwoLevel=#{merchantID} and OneLevel=#{UserID});
 	</select>
 
 	<!-- 用户提现 -->
@@ -85,6 +87,7 @@
 	</update>
 
 
+	<!-- 更改用户结算卡状态 -->
 	<update id="updateUserBankStatus" parameterType="com.rhjf.account.modle.domain.salesman.LoginUser">
 		update tab_loginuser set BankInfoStatus=#{bankInfoStatus} , Remarks=#{remarks} where LoginID=#{loginID}
 	</update>

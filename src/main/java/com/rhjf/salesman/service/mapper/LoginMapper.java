@@ -11,6 +11,11 @@ import com.rhjf.account.modle.domain.salesman.LoginUser;
 public interface LoginMapper {
 
 
+    /**
+     *   获取用户信息
+     * @param map
+     * @return
+     */
     public LoginUser login(Map<String, String> map);
 
     /**
@@ -66,6 +71,11 @@ public interface LoginMapper {
     public int updatePhotoInfo(Map<String, String> map);
 
 
+    /**
+     *   更改用户计算卡状态
+     * @param user
+     * @return
+     */
     public int updateUserBankStatus(LoginUser user);
 
 

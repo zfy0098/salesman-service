@@ -224,8 +224,21 @@ public class LoginServiceImpl implements LoginService{
 			return paramterData;
 		}
 
+
+//		String content = "<div style='width:600px; height:350px; border-bottom:1px dashed #666; margin:0 auto; '> " +
+//				"<h1>亲爱的用户:</h1> <br> <br> <p>您好！感谢您使用爱码付，您正在进行邮箱验证，本次请求的验证码为：<span style='font-size:25px; color: #FF6600;'>" + smsCode
+//				+ "</span><br>(为了保障您账号的安全性，请在1小时内完成验证)</p><br><br><br> <h3>爱码付团队</h3> <br>" +
+//				"<h3>" + DateUtil.getNowTime("yyyy")+ "年" +DateUtil.getNowTime("MM")+ "月"+DateUtil.getNowTime("dd")+"日</h3></div>";
+
+
+		String content = "<div style='width:500px; height:300px; border-bottom:1px dashed #999; margin:0 auto; padding-right:20px; font-family: '宋体';'>" +
+				"<h1 style='font-size:20px;'>亲爱的用户:</h1><p style='line-height: 36px; margin:42px 0; font-size:15px;'>您好！感谢您使用爱码付，您正在进行邮箱验证，本次请求的验证码为:<br>" +
+				"<span style='font-size:28px; color: #D86640;'>"+smsCode+"</span>(为了保障您账号的安全性，请在1小时内完成验证)</p><h4 style='font-size:15px;'>爱码付团队</h4>" +
+				"<h4 style='margin:28px 0;font-size:15px; '>"+ DateUtil.getNowTime("yyyy")+ "年" +DateUtil.getNowTime("MM")+ "月"+DateUtil.getNowTime("dd")+"日</h4></div>";
+
+
 		try {
-			SendMail.sendMail("修改密码验证码", smsCode, new String[]{user.getLoginID()} , null , null);
+			SendMail.sendMail("【爱码付团队】 邮箱验证码", content, new String[]{user.getLoginID()} , null , null);
 
 			paramterData.setRespCode(RespCode.SUCCESS[0]);
 			paramterData.setRespDesc(RespCode.SUCCESS[1]);

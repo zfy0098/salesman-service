@@ -75,7 +75,6 @@
 	<bean id="testService" class="com.rhjf.salesman.service.service.TestServiceImpl" ></bean>
 
 
-
 	<!--  固定码接口 -->
 	<dubbo:service interface="com.rhjf.salesman.core.service.QRCodeService" ref="QRCodeService" version="1.0" />
 	<bean id="QRCodeService" class="com.rhjf.salesman.service.service.QRCodeServiceImpl" ></bean>

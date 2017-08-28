@@ -30,27 +30,6 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
     @Autowired
     private SalesManProfitMapper salesManProfitMapper;
 
-    /**
-     * 业务员查询收益总和
-     *
-     * @param user
-     * @param paramter
-     * @return
-     */
-    public ParamterData profitTotal(LoginUser user, ParamterData paramter) {
-
-        Map<String, String> salesManProfit = salesManProfitMapper.profitTotal(user.getID());
-
-        if (salesManProfit == null || salesManProfit.isEmpty()) {
-            salesManProfit = new HashMap<>();
-            salesManProfit.put("distributeProfit", "0");
-            salesManProfit.put("profit", "0");
-        }
-
-        paramter.setList(JSONObject.fromObject(salesManProfit).toString());
-
-        return paramter;
-    }
 
 
     /**
@@ -60,7 +39,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
      * @param paramter
 -     * @return
      */
-    public ParamterData profitDetailByToDay(LoginUser user, ParamterData paramter) {
+    public ParamterData profitDetailByDay(LoginUser user, ParamterData paramter) {
 
         String toDay = paramter.getTradeDate();
 
