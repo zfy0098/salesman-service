@@ -10,24 +10,16 @@ import com.rhjf.salesman.service.util.auth.AuthService;
 import com.rhjf.salesman.service.util.auth.Author;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.apache.http.auth.AUTH;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.LogManager;
 
 /**
  * Created by hadoop on 2017/8/11.
@@ -73,7 +65,7 @@ public class MerchantServiceImpl implements MerchantService {
     public ParamterData inputMerchant(LoginUser user, ParamterData paramter) {
 
 
-        log.info("业务员:" + user.getLoginID() + "添加商户");
+        log.info("业务员:" + user.getLoginID() + "添加商户, 添加的手机号：" + paramter.getMerchantLoginID());
 
         try {
 
@@ -313,7 +305,7 @@ public class MerchantServiceImpl implements MerchantService {
                 paramter.setRespDesc("失败,请稍后再试");
             }
 
-            if (Constants.payRetCode.equals("0000")) {
+            if (Constants.payRetCode.equals(respCode)) {
 
                 log.info("商户：" + paramter.getMerchantLoginID() + "在平台入网成功,保存商户秘钥等信息");
 
@@ -554,9 +546,6 @@ public class MerchantServiceImpl implements MerchantService {
         map.put("merchantName", merchantName);
 
         List<Map<String, String>> list = loginMapper.merchantlist(map);
-
-
-
 
         paramter.setList(JSONArray.fromObject(list).toString());
 

@@ -7,7 +7,7 @@
 
 	<!-- 查询改银行卡号是否被鉴权过 -->
 	<select id="bankAuthenticationInfo" parameterType="java.lang.String" resultType="java.util.HashMap">
-		select * from tab_authentication where BankCardNo=#{BankCardNo} and RespCode=00
+		select * from tab_authentication where BankCardNo=#{BankCardNo} and RespCode='00' limit 1
 	</select>
 
 

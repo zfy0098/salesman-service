@@ -12,9 +12,7 @@ public interface LoginMapper {
 
 
     /**
-     *   获取用户信息
-     * @param map
-     * @return
+     * 获取用户信息
      */
     public LoginUser login(Map<String, String> map);
 
@@ -54,25 +52,14 @@ public interface LoginMapper {
 
 
     /**
-     * 用户提现
-     **/
-    public Integer txProfit(Map<String, Object> map);
-
-
-    /**
-     * 提现列表
-     **/
-    public List<Map<String, String>> TxRecordList(Map<String, String> map);
-
-
-    /**
      * 更新照片
      **/
     public int updatePhotoInfo(Map<String, String> map);
 
 
     /**
-     *   更改用户计算卡状态
+     * 更改用户计算卡状态
+     *
      * @param user
      * @return
      */

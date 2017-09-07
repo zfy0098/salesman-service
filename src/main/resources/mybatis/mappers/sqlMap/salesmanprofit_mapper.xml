@@ -7,7 +7,8 @@
 
 	<!--  查询业务员的总收益 -->
 	<select id="profitTotal" parameterType="java.lang.String" resultType="java.util.HashMap" >
-		  select concat(ifnull(sum(DistributeProfit) , 0),'') as distributeProfit , concat(ifnull(sum(Profit) , 0),'') as profit
+		  select concat(ifnull(sum(DistributeProfit) , 0),'') as distributeProfit , concat(ifnull(sum(Profit) , 0),'') as profit ,
+		   concat(ifnull(sum(DistributeProfit),0) + ifnull(sum(Profit),0) , '') as totalProfit
 		  from tab_salesman_profit  where SalesManID=#{salesManID}
 	</select>
 
@@ -48,21 +49,12 @@
 	</select>
 
 
-	<!-- 查询业务员月报数据 -->
-	<select id="monthlyReport" parameterType="java.lang.String" resultType="java.util.HashMap">
-
-		SELECT  left(TradeDate,4) as year ,SUBSTR(TradeDate FROM 6 FOR 2) as month , count(1) as count ,
-		concat(ifnull(sum(DistributeProfit),0)+ifnull(SUM(Profit),0),'') as amount
-		 FROM tab_salesman_profit where SalesManID=#{salesManID} GROUP BY LEFT(TradeDate,7) ORDER  by  year desc , month desc  ;
-
-	</select>
-
-
-
+	<!-- 月报详细数据 -->
 	<select id="monthlyReportDetailed" parameterType="java.util.Map" resultType="java.util.HashMap">
-		select tl.MerchantName , tpo.Amount , Profit , DistributeProfit ,Profit+DistributeProfit as profitTotal , DATE_FORMAT(CONCAT(LocalDate,LocalTimes),'%Y-%m-%d %H:%m:%s') as tradeTime
+		select tl.MerchantName , tpo.Amount , Profit , DistributeProfit ,Profit+DistributeProfit as profitTotal ,
+		DATE_FORMAT(CONCAT(LocalDate,LocalTimes),'%Y-%m-%d %H:%m:%s') as tradeTime
 		from tab_loginuser as tl INNER JOIN tab_pay_order as tpo on tl.ID=tpo.UserID
 		INNER JOIN tab_salesman_profit as tsp on tl.SalesManID=tsp.SalesManID and tsp.TradeID=tpo.ID
-		 where tpo.PayRetCode='0000' and tsp.SalesManID=#{salesManID} and left(tpo.LocalDate,6)=#{toDay}
+		 where tpo.PayRetCode='0000' and tsp.SalesManID=#{salesManID} and left(tpo.LocalDate,6)=#{date} and Profit+DistributeProfit>0 order by tradeTime desc
 	</select>
 </mapper>

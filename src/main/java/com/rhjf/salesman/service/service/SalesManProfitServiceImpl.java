@@ -6,6 +6,7 @@ import com.rhjf.salesman.core.constants.RespCode;
 import com.rhjf.salesman.core.service.SalesManProfitService;
 import com.rhjf.salesman.core.util.DateUtil;
 import com.rhjf.salesman.service.mapper.SalesManProfitMapper;
+import com.rhjf.salesman.service.mapper.SalesmanMonthProfitMapper;
 import com.sun.org.apache.regexp.internal.RE;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -29,6 +30,9 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
     @Autowired
     private SalesManProfitMapper salesManProfitMapper;
+
+    @Autowired
+    private SalesmanMonthProfitMapper salesmanMonthProfitMapper;
 
 
 
@@ -101,7 +105,6 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
             }
 
 
-
             log.info("当天的收益数据：" + JSONObject.fromObject(salesManProfit).toString());
 
             if(tradeDate.equals(DateUtil.getNowTime(DateUtil.yyyyMMdd))){
@@ -115,7 +118,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
             paramter.setDistributeProfit(String.valueOf(salesManProfit.get("distributeProfit")));
             paramter.setProfit(String.valueOf(salesManProfit.get("profit")));
-            paramter.setProfitTotal(salesManProfit.get("amount"));
+            paramter.setProfitTotal(String.valueOf(salesManProfit.get("amount")));
 
             paramter.setList(JSONArray.fromObject(list).toString());
             paramter.setRespCode(RespCode.SUCCESS[0]);
@@ -132,23 +135,6 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
 
     /**
-     * 显示分润可提现余额
-     *
-     * @param user
-     * @param paramterData
-     * @return
-     */
-    public ParamterData profitIncomeBalance(LoginUser user, ParamterData paramterData) {
-
-        paramterData.setBalance(user.getFeeBalance());
-        paramterData.setRespDesc(RespCode.SUCCESS[0]);
-        paramterData.setRespDesc(RespCode.SUCCESS[1]);
-
-        return paramterData;
-    }
-
-
-    /**
      * 月报收益
      *
      * @param user
@@ -158,7 +144,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
         log.info("用户：" + user.getLoginID() + "查询收益月报数据");
 
-        List<Map<String, String>> monthlyReportList = salesManProfitMapper.monthlyReport(user.getID());
+        List<Map<String, String>> monthlyReportList = salesmanMonthProfitMapper.monthlyReport(user.getID());
 
         Map<String, List<Map<String, String>>> map = new HashMap<>();
 
@@ -180,21 +166,21 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
             }
             map2.put("month", month);
             map2.put("amount", String.valueOf(map2.get("amount")));
-            map2.put("count", String.valueOf(map2.get("count")));
-            map2.put("isopen" , "0");  // 0未读 1已读
+            map2.put("count", "0");
+            map2.put("isopen" , map2.get("Open").toString());  // 0未读 1已读
+            map2.remove("Open");
             list.add(map2);
             map.put(year, list);
         }
 
         JSONArray array = new JSONArray();
-
-//        for (String year : map.keySet()) {
-//            List<Map<String, String>> data = map.get(year);
-//            JSONObject json = new JSONObject();
-//            json.put("year", year);
-//            json.put("content", JSONArray.fromObject(data));
-//            array.add(json);
-//        }
+        for (String year : map.keySet()) {
+            List<Map<String,String>> data = map.get(year);
+            JSONObject json = new JSONObject();
+            json.put("year", year);
+            json.put("content", JSONArray.fromObject(data));
+            array.add(json);
+        }
 
         paramterData.setList(array.toString());
         paramterData.setRespCode(RespCode.SUCCESS[0]);
@@ -216,10 +202,14 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
         Map<String,String> map = new HashMap<>();
         map.put("salesManID" , user.getID());
-        map.put("toDay" , stringBuffer.toString());
+        map.put("date" , stringBuffer.toString());
+
+        log.info("用户ID：" + user.getID());
+        log.info("查询的时间:" + stringBuffer.toString());
 
         List<Map<String,String>> list = salesManProfitMapper.monthlyReportDetailed(map);
 
+        salesmanMonthProfitMapper.updateMonthlyOpenStatus(map);
 
         paramter.setList(JSONArray.fromObject(list).toString());
         paramter.setRespCode(RespCode.SUCCESS[0]);
@@ -239,33 +229,26 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
 
         JSONArray array  = new JSONArray();
-        JSONObject json = new JSONObject();
-
-        json.put("amount"  , "1");
-        json.put("LocalDate" , "6");
-
-        array.add(json);
-
-        json.put("amount"  , "2");
-        json.put("LocalDate" , "7");
-
-        array.add(json);
-
-
-        json.put("amount"  , "12");
-        json.put("LocalDate" , "5");
-
-        array.add(json);
-
-
         paramterData.setList(array.toString());
-        paramterData.setProfitTotal("15");
-        paramterData.setDistributeProfit("7");
-        paramterData.setProfit("8");
+
+        String tradeDate = paramterData.getTradeDate();
+        StringBuffer stringBuffer = new StringBuffer(tradeDate);
+        if(tradeDate.length() < 6){
+            stringBuffer.insert(4, "0");
+        }
+
+        Map<String,String> map = new HashMap<>();
+        map.put("SalesManID" , user.getID());
+        map.put("ProfitMonth" , stringBuffer.toString());
+
+        Map<String,String> totalProfitMap =  salesmanMonthProfitMapper.monthlyTotalProfit(map);
+
+        paramterData.setProfitTotal(totalProfitMap.get("TotalProfit"));
+        paramterData.setDistributeProfit(totalProfitMap.get("DistributeProfit"));
+        paramterData.setProfit(totalProfitMap.get("Profit"));
 
         paramterData.setRespCode(RespCode.SUCCESS[0]);
         paramterData.setRespDesc(RespCode.SUCCESS[1]);
-
         return  paramterData;
     }
 }

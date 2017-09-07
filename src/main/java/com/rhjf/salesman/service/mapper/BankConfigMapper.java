@@ -14,8 +14,7 @@ import java.util.Map;
 public interface BankConfigMapper {
 
 
-
-    public List<Map<String,String>> getBankList();
+    public List<Map<String, String>> getBankList();
 
 
     public BankConfig getBanConfigInfo(String ID);

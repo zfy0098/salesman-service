@@ -205,7 +205,9 @@ public class LoginServiceImpl implements LoginService{
 	}
 
 
-
+	/**
+	 *   向邮箱发送验证码
+	 */
 	public ParamterData verificationEmail(LoginUser  user , ParamterData paramterData){
 
 
@@ -224,18 +226,10 @@ public class LoginServiceImpl implements LoginService{
 			return paramterData;
 		}
 
-
-//		String content = "<div style='width:600px; height:350px; border-bottom:1px dashed #666; margin:0 auto; '> " +
-//				"<h1>亲爱的用户:</h1> <br> <br> <p>您好！感谢您使用爱码付，您正在进行邮箱验证，本次请求的验证码为：<span style='font-size:25px; color: #FF6600;'>" + smsCode
-//				+ "</span><br>(为了保障您账号的安全性，请在1小时内完成验证)</p><br><br><br> <h3>爱码付团队</h3> <br>" +
-//				"<h3>" + DateUtil.getNowTime("yyyy")+ "年" +DateUtil.getNowTime("MM")+ "月"+DateUtil.getNowTime("dd")+"日</h3></div>";
-
-
 		String content = "<div style='width:500px; height:300px; border-bottom:1px dashed #999; margin:0 auto; padding-right:20px; font-family: '宋体';'>" +
 				"<h1 style='font-size:20px;'>亲爱的用户:</h1><p style='line-height: 36px; margin:42px 0; font-size:15px;'>您好！感谢您使用爱码付，您正在进行邮箱验证，本次请求的验证码为:<br>" +
 				"<span style='font-size:28px; color: #D86640;'>"+smsCode+"</span>(为了保障您账号的安全性，请在1小时内完成验证)</p><h4 style='font-size:15px;'>爱码付团队</h4>" +
 				"<h4 style='margin:28px 0;font-size:15px; '>"+ DateUtil.getNowTime("yyyy")+ "年" +DateUtil.getNowTime("MM")+ "月"+DateUtil.getNowTime("dd")+"日</h4></div>";
-
 
 		try {
 			SendMail.sendMail("【爱码付团队】 邮箱验证码", content, new String[]{user.getLoginID()} , null , null);
@@ -361,92 +355,5 @@ public class LoginServiceImpl implements LoginService{
 		return paramter;
 	}
 
-
-	/**  用户提现 **/
-	public ParamterData txProfit(LoginUser user , ParamterData paramter){
-
-		String amount = paramter.getAmount();
-		Salesman salesman = salesmanMapper.salesmanInfo(user.getSalesManID());
-		log.info("业务员：" + user.getLoginID() + "发起提现请求,提现金额:" + paramter.getAmount());
-
-
-		Map<String,Object> map = new HashMap<>();
-		map.put("in_loginID",user.getID());
-		map.put("in_amount", amount);
-		map.put("in_termSerno" , paramter.getSendTime() );
-		map.put("in_txType","0");
-		map.put("in_accountNo" , salesman.getAccountNo());
-		map.put("ret" , 0);
-
-		loginMapper.txProfit(map);
-
-		Integer ret = Integer.parseInt(map.get("ret").toString());
-
-		if(ret==2){
-			log.info("业务员："+ user.getLoginID()+ "提款金额不足，提款金额：" + paramter.getAmount());
-			paramter.setRespCode(RespCode.TXAMOUNTNOTENOUGH[0]);
-			paramter.setRespDesc(RespCode.TXAMOUNTNOTENOUGH[1]);
-		} else if( ret == 1){
-
-			user = userInfo(user.getLoginID());
-			paramter.setBalance(user.getFeeBalance());
-
-			log.info("业务员："+ user.getLoginID()+ "提款成功");
-			paramter.setRespCode(RespCode.SUCCESS[0]);
-			paramter.setRespDesc(RespCode.SUCCESS[1]);
-		}else{
-			paramter.setRespCode(RespCode.ServerDBError[0]);
-			paramter.setRespDesc(RespCode.ServerDBError[1]);
-		}
-		return paramter;
-	}
-
-
-
-	/**  提现记录 **/
-	public ParamterData TxRecordList(LoginUser user , ParamterData paramter){
-
-
-		log.info("业务员" + user.getLoginID() + "获取提现记录, 查询时间:" + paramter.getTradeDate());
-
-
-		/**   交易年月   **/
-		StringBuffer stringBuffer = new StringBuffer(paramter.getTradeDate());
-
-		StringBuffer sbf = new StringBuffer(paramter.getTradeDate());
-
-		if(paramter.getTradeDate().length() < 6){
-			stringBuffer.insert(4, "-0");
-			sbf.insert(4, "0");
-		}else{
-			stringBuffer.insert(4, "-");
-		}
-
-
-		log.info("查询时间：分润总和时间" + stringBuffer.toString());
-		log.info("查询时间：提现记录时间:" + sbf.toString());
-
-
-		Map<String,String> params = new HashMap<>();
-		params.put("salesManID" , user.getID());
-		params.put("tradeDate" , sbf.toString());
-
-
-		Map<String,String> pro = salesManProfitMapper.profitMonth(params);
-		paramter.setProfitTotal(pro.get("totalProfit"));
-		log.info("业务员：" + user.getLoginID() + "时间：" + stringBuffer.toString() + "分润总和:" + pro.toString());
-
-		params.clear();
-		params.put("userID",user.getID());
-		params.put("tradeDate",stringBuffer.toString());
-		List<Map<String,String>> list = loginMapper.TxRecordList(params);
-		log.info("业务员：" + user.getLoginID() + "时间：" + stringBuffer.toString() + "提现记录:" + JSONArray.fromObject(list).toString());
-
-		paramter.setList(JSONArray.fromObject(list).toString());
-		paramter.setRespCode(RespCode.SUCCESS[0]);
-		paramter.setRespDesc(RespCode.SUCCESS[1]);
-
-		return paramter;
-	}
 
 }

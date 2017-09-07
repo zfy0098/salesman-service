@@ -3,11 +3,14 @@
         PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+
+
     <!-- 命名空间 -->
     <typeAliases>
         <!-- <typeAlias alias="Notice" type="com.stormlions.ecost.domain.Notice" />
         <typeAlias alias="User" type="com.stormlions.ecost.domain.User" /> -->
     </typeAliases>
+
 
 
     <plugins>
@@ -37,5 +40,7 @@
             <property name="returnPageInfo" value="check"/>
         </plugin>
     </plugins>
+
+
 
 </configuration>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.SalesmanMonthProfitMapper">
+
+
+
+	<!-- 查询业务员月报数据 -->
+	<select id="monthlyReport" parameterType="java.lang.String" resultType="java.util.HashMap">
+
+		select left(ProfitMonth ,4 ) as year , SUBSTR(ProfitMonth FROM 5 FOR 2) as   month  ,  CONCAT(TotalProfit, '') as amount,
+		 Open  from tab_salesman_monthprofit  where SalesManID=#{SalesManID}
+	</select>
+
+
+	<select id="monthlyTotalProfit" parameterType="java.util.Map" resultType="java.util.HashMap">
+
+		select  DistributeProfit , Profit , TotalProfit
+		  from tab_salesman_monthprofit  where SalesManID=#{SalesManID} and ProfitMonth=#{ProfitMonth}
+
+	</select>
+
+
+	<update id="updateMonthlyOpenStatus" parameterType="java.util.Map">
+
+		update tab_salesman_monthprofit set Open=1 where SalesManID=#{salesManID} and  ProfitMonth=#{date}
+	</update>
+
+</mapper>

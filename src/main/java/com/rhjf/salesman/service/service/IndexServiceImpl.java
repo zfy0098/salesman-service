@@ -10,7 +10,6 @@ import com.rhjf.salesman.core.util.DateJsonValueProcessor;
 import com.rhjf.salesman.core.util.DateUtil;
 import com.rhjf.salesman.service.mapper.SalesManProfitMapper;
 import com.rhjf.salesman.service.mapper.SalesmanMapper;
-import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
 import org.slf4j.Logger;
@@ -31,7 +30,6 @@ import java.util.Map;
 @Service("indexService")
 public class IndexServiceImpl implements IndexService{
 
-
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
@@ -39,7 +37,6 @@ public class IndexServiceImpl implements IndexService{
 
     @Autowired
     private SalesManProfitMapper salesManProfitMapper;
-
 
     /**
      *   用户的登录以后 加载基础数据
@@ -61,7 +58,6 @@ public class IndexServiceImpl implements IndexService{
 
         paramter.setList(jo.toString());
 
-
         SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.yyyy_MM_dd);
 
         String registerDate = sdf.format(salesman.getRegisterDate());
@@ -72,7 +68,7 @@ public class IndexServiceImpl implements IndexService{
 
         paramter.setProfit(String.valueOf(profitmap.get("profit")));
         paramter.setDistributeProfit(String.valueOf(profitmap.get("distributeProfit")));
-        paramter.setProfitTotal((Integer.parseInt(String.valueOf(profitmap.get("profit"))) + Integer.parseInt(String.valueOf(profitmap.get("distributeProfit")))) + "");
+        paramter.setProfitTotal(String.valueOf(profitmap.get("totalProfit")));
 
         paramter.setBalance(user.getFeeBalance());
 

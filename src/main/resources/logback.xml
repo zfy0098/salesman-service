@@ -15,7 +15,7 @@
             <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.LevelFilter"><!-- 只打印错误日志 -->
-            <!--<level>DEBUG</level>-->
+            <level>DEBUG</level>
             <onMatch>ACCEPT</onMatch>
             <onMismatch>DENY</onMismatch>
         </filter>
@@ -36,12 +36,14 @@
         </filter>
     </appender>
 
-    <!-- project default level -->
-    <logger name="guoer_appserv" level="INFO"/>
 
-    <root level="INFO">
+    <!-- project default level -->
+    <logger name="salesman_service" level="INFO"/>
+
+    <root level="INFO" >
         <appender-ref ref="console"/>
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="errorAppender"/>
+
     </root>
 </configuration>

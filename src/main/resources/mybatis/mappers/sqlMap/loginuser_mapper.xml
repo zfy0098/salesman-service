@@ -35,7 +35,7 @@
 
 	<!-- 商户列表 -->
 	<select id="merchantlist" parameterType="java.util.Map" resultType="java.util.HashMap">
-		select ID , LoginID, merchantName , 0 as count , concat(MerchantLeve,'') as MerchantLeve ,  concat(PhotoStatus,'') as PhotoStatus  ,
+		select ID , LoginID, merchantName , 0 as count , MerchantLeve ,  PhotoStatus ,
 		 DATE_FORMAT(RegisterTime,'%Y-%m-%d') as RegisterTime ,  DATE_FORMAT(RegisterTime,'%Y-%m-%d %H:%m:%s') as times
 		 from tab_loginuser where  ThreeLevel=#{userID}
 		 and MerchantName like concat('%',concat(#{merchantName} , '%')) order by  times DESC
@@ -43,7 +43,7 @@
 
 	<!-- 查询某一个商户为业务员制造的收益 -->
 	<select id="queryMerchantTotalAmount" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		select concat(ifnull(sum(DistributeProfit)+sum(Profit) , 0) , '') as Amount from tab_salesman_profit where TradeUserID in (
+		select ifnull(sum(DistributeProfit)+sum(Profit) , '0') as Amount from tab_salesman_profit where TradeUserID in (
 		select ID from tab_loginuser where (ThreeLevel=#{merchantID} or TwoLevel=#{merchantID}
 		or ID=#{merchantID})) and SalesManID=#{UserID}
 	</select>
@@ -53,29 +53,6 @@
 	<select id="merchantTokerCount" parameterType="java.util.Map" resultType="java.lang.Integer" >
 		  select count(1) as count from tab_loginuser where (ThreeLevel=#{merchantID} and TwoLevel=#{UserID}) or
 		  (TwoLevel=#{merchantID} and OneLevel=#{UserID});
-	</select>
-
-	<!-- 用户提现 -->
-	<select id="txProfit" parameterType="java.util.HashMap" resultType="java.lang.Integer" statementType="CALLABLE">
-		{call tixian(
-		   #{in_loginID , mode=IN,jdbcType=VARCHAR},
-			#{in_amount ,mode=IN,jdbcType=VARCHAR},
-			#{in_termSerno , mode=IN,jdbcType=VARCHAR},
-			#{in_txType , mode=IN,jdbcType=VARCHAR},
-			#{in_accountNo , mode=IN,jdbcType=VARCHAR},
-			#{ret , mode=OUT,jdbcType=INTEGER}
-			)
-		}
-	</select>
-
-
-	<!-- 用户提现列表 -->
-	<select id="TxRecordList" parameterType="java.util.Map" resultType="java.util.HashMap">
-		select ApplyDate,ApplyMoney,TermSerno,BalanceFlag , s.AccountNo , tpb.bankName ,
-		case cardName when 'DEBIT_CARD' then '储蓄卡' when 'CREDIT_CARD' then '信用卡' end  as cardName ,
-		tpb.bankCode as BankSybol
- 		from tab_withdraw s left JOIN tab_pay_binverify as tpb on SUBSTRING(s.AccountNo , 1 , tpb.verifyLength)= tpb.verifyCode
-		where  ApplyUserID=#{userID} and left( ApplyDate , 7 )=#{tradeDate} and TxType=0 order by ApplyDate desc
 	</select>
 
 

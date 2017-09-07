@@ -7,10 +7,10 @@ import com.rhjf.account.modle.domain.salesman.TermKey;
 @Component
 public interface TermkeyMapper {
 
-	public int sign(TermKey terMkey);
+    public int sign(TermKey terMkey);
 
-	public TermKey queryUserKey(String UserID);
+    public TermKey queryUserKey(String UserID);
 
-	public int addTermKey(TermKey termKey);
+    public int addTermKey(TermKey termKey);
 
 }

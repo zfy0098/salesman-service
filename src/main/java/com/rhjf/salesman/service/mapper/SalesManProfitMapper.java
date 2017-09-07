@@ -50,10 +50,6 @@ public interface SalesManProfitMapper {
     public Map<String, String> profitMonth(Map<String, String> map);
 
 
-    /**
-     * 查询月报数据
-     **/
-    public List<Map<String, String>> monthlyReport(String salesManID);
 
 
     /**

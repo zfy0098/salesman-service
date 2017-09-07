@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Created by hadoop on 2017/8/4.
  */
 @Transactional
-public class SalesManBulletinServiceImpl implements SalesManBulletinService{
+public class SalesManBulletinServiceImpl implements SalesManBulletinService {
 
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
@@ -32,20 +32,21 @@ public class SalesManBulletinServiceImpl implements SalesManBulletinService{
 
 
     /**
-     *    显示公告列表
+     * 显示公告列表
+     *
      * @param user
      * @param paramter
      * @return
      */
-    public ParamterData salesmanBulletinList(LoginUser user, ParamterData paramter){
+    public ParamterData salesmanBulletinList(LoginUser user, ParamterData paramter) {
 
 
-        Map<String,String> map = new HashMap<>();
+        Map<String, String> map = new HashMap<>();
 
-        map.put("agentID" , user.getAgentID());
-        map.put("salesmanID" , user.getSalesManID());
+        map.put("agentID", user.getAgentID());
+        map.put("salesmanID", user.getSalesManID());
 
-        List<SalesManBulletin> list =  salesManBulletinMapper.salesManBulletinList(map);
+        List<SalesManBulletin> list = salesManBulletinMapper.salesManBulletinList(map);
 
         Integer count = salesManBulletinMapper.unreadCount(user.getSalesManID());
 
@@ -57,18 +58,17 @@ public class SalesManBulletinServiceImpl implements SalesManBulletinService{
     }
 
 
-
-
     /**
-     *   显示公告详细
+     * 显示公告详细
+     *
      * @param user
      * @param paramter
      * @return
      */
-    public ParamterData salesmanBulletinDetail(LoginUser user , ParamterData paramter){
+    public ParamterData salesmanBulletinDetail(LoginUser user, ParamterData paramter) {
 
 
-        SalesManBulletin  salesManBulletin = salesManBulletinMapper.getSalesmanBulletinDetail(paramter.getID());
+        SalesManBulletin salesManBulletin = salesManBulletinMapper.getSalesmanBulletinDetail(paramter.getID());
 
         paramter.setList(JSONObject.fromObject(salesManBulletin).toString());
 

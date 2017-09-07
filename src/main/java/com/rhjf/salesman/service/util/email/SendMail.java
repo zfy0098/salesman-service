@@ -112,7 +112,7 @@ public class SendMail {
 
 		MailBean mb = new MailBean();
 		mb.setHost("smtp.qiye.163.com"); // 设置SMTP主机(163)，若用126，则设为：smtp.126.com
-		mb.setUsername(".com"); // 设置发件人邮箱的用户名  
+		mb.setUsername("@.com"); // 设置发件人邮箱的用户名  
 		mb.setPassword("@163"); // 设置发件人邮箱的密码，需将*号改成正确的密码
 		mb.setFrom("@.com"); // 设置发件人的邮箱
 

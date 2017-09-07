@@ -18,6 +18,8 @@ public interface UserConfigMapper {
     public UserConfig getUserConfig(UserConfig userConfig);
 
 
-    /** 修改商户费率　**/
+    /**
+     * 修改商户费率
+     **/
     public int updateUserConfig(UserConfig userConfig);
 }

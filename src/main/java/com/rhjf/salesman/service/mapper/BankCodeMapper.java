@@ -13,12 +13,12 @@ import java.util.Map;
 public interface BankCodeMapper {
 
 
-    public List<String> bankBranchList(Map<String,String> map);
+    public List<String> bankBranchList(Map<String, String> map);
 
 
-    public Map<String,String> bankBinMap(String accountNo);
+    public Map<String, String> bankBinMap(String accountNo);
 
 
-    public BankCode getBankCode(Map<String,String> map);
+    public BankCode getBankCode(Map<String, String> map);
 
 }

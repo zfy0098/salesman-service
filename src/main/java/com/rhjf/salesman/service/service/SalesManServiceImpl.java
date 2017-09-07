@@ -24,21 +24,16 @@ import java.util.Map;
 @Service("salesmanService")
 public class SalesManServiceImpl implements SalesManService {
 
-
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private SalesmanMapper salesmanMapper;
 
-
     @Autowired
     private BankCodeMapper bankCodeMapper;
 
-
     @Autowired
     private UserBankCardMapper userBankCardMapper;
-
-
 
     @Autowired
     private AuthenticationMapper authenticationMapper;

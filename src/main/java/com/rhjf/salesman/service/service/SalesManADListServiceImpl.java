@@ -23,18 +23,14 @@ public class SalesManADListServiceImpl implements SalesManADListService {
 
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
-
     @Autowired
     private SalesManADMapper salesManADMapper;
 
 
     /**
-     *   首页轮播图
-     * @param paramter
-     * @return
+     * 首页轮播图
      */
-    public ParamterData adlist(ParamterData paramter){
-
+    public ParamterData adlist(ParamterData paramter) {
 
         List<SalesManADList> adlist = salesManADMapper.adlist();
 
@@ -43,28 +39,24 @@ public class SalesManADListServiceImpl implements SalesManADListService {
         Object[] adurl = new Object[adlist.size()];
         Object[] title = new Object[adlist.size()];
 
-
         JSONObject json = new JSONObject();
-        for(int i = 0; i< adlist.size() ; i++){
+        for (int i = 0; i < adlist.size(); i++) {
             content[i] = UtilsConstant.ObjToStr(adlist.get(i).getContent());
-            imgurl[i] =  UtilsConstant.ObjToStr(adlist.get(i).getImgURL());
-            adurl[i] =  UtilsConstant.ObjToStr(adlist.get(i).getADURL());
+            imgurl[i] = UtilsConstant.ObjToStr(adlist.get(i).getImgURL());
+            adurl[i] = UtilsConstant.ObjToStr(adlist.get(i).getADURL());
             title[i] = UtilsConstant.ObjToStr(adlist.get(i).getTitle());
         }
 
-        json.put("content" , content);
-        json.put("imgurl" , imgurl);
-        json.put("adurl" , adurl);
-        json.put("title" , title);
-
+        json.put("content", content);
+        json.put("imgurl", imgurl);
+        json.put("adurl", adurl);
+        json.put("title", title);
 
         paramter.setList(json.toString());
         paramter.setRespCode(RespCode.SUCCESS[0]);
         paramter.setRespDesc(RespCode.SUCCESS[1]);
 
         return paramter;
-
     }
-
 
 }

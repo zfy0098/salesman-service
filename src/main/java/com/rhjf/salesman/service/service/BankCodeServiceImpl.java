@@ -39,24 +39,26 @@ public class BankCodeServiceImpl implements BankCodeService {
         String bankCity = paramter.getBankCity();
         String accountNo = paramter.getBankCardNo();
 
-
-        log.info("获取支行名称列表： 所在省份:" + bankCity + " , 城市:" + bankCity + ", 卡号：" + accountNo);
+        log.info("获取支行名称列表： 所在省份:" + bankProv + " , 城市:" + bankCity + ", 卡号：" + accountNo);
 
 
         Map<String,String> bankBinMap = bankCodeMapper.bankBinMap(accountNo);
 
         if(bankBinMap == null || bankBinMap.isEmpty()){
 
-            log.info("获取支行列表失败: 所在省份:" + bankCity + " , 城市:" + bankCity + ", 卡号：" + accountNo);
+            log.info("获取支行列表失败: 所在省份:" + bankProv + " , 城市:" + bankCity + ", 卡号：" + accountNo);
 
             paramter.setRespCode(RespCode.BankCardInfoErroe[0]);
-            paramter.setRespDesc(RespCode.BankCardInfoErroe[1]);
+            paramter.setRespDesc("匹配银行名称失败，请更换银行卡。");
 
         }else{
+
             Map<String,String> map = new HashMap<>();
             map.put("bankName" , bankBinMap.get("bankName"));
             map.put("bankProv" , bankProv);
             map.put("bankCity" , bankCity);
+
+            log.info("获取支行名称：" +  bankBinMap.get("bankName") + "， 城市:" + bankCity + " , 省份:" + bankProv);
 
             List<String> list =  bankCodeMapper.bankBranchList(map);
 

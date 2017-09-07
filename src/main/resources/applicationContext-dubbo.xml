@@ -13,14 +13,14 @@
 	<!-- <dubbo:registry address="multicast://224.5.6.7:1234" /> -->
 
 	<!-- 使用zookeeper注册中心暴露服务地址 -->
-	<dubbo:registry protocol="zookeeper" address="${dubbo.registry.address}"
-		id="zookeeperClient" />
+	<dubbo:registry protocol="zookeeper" address="${dubbo.registry.address}" id="zookeeperClient" />
 	<dubbo:protocol name="dubbo" port="${dubbo.port}" />
 
 	<!-- 扫描注解包路径，多个包用逗号分隔，不填pacakge表示扫描当前ApplicationContext中所有的类 -->
 	<dubbo:annotation package="com.rhjf.salesman.core.service"/> 
 	
 	<!-- 声明需要暴露的服务接口    timeout="100000" version="1.0"-->
+	
 	<!-- 用户管理接口 -->
 	<dubbo:service interface="com.rhjf.salesman.core.service.LoginService" ref="loginService"  version="1.0" />
   	<bean id="loginService" class="com.rhjf.salesman.service.service.LoginServiceImpl"></bean> 
@@ -79,4 +79,9 @@
 	<dubbo:service interface="com.rhjf.salesman.core.service.QRCodeService" ref="QRCodeService" version="1.0" />
 	<bean id="QRCodeService" class="com.rhjf.salesman.service.service.QRCodeServiceImpl" ></bean>
 
+	
+	
+	<!--  提现功能 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.WithdrawService"  ref="withdrawService" version="1.0" />
+	<bean id="withdrawService" class="com.rhjf.salesman.service.service.WithdrawServiceImpl" ></bean>
 </beans>

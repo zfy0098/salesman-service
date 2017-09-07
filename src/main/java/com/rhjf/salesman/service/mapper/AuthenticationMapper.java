@@ -9,18 +9,20 @@ public interface AuthenticationMapper {
 
 
     /**
-     *   查询改银行卡号是否被鉴权过
+     * 查询改银行卡号是否被鉴权过
+     *
      * @param bankNo
      * @return
      */
-    public Map<String,String> bankAuthenticationInfo(String bankNo);
+    public Map<String, String> bankAuthenticationInfo(String bankNo);
 
 
     /**
-     *   添加鉴权信息
+     * 添加鉴权信息
+     *
      * @param map
      * @return
      */
-    public int addAuthencationInfo(Map<String,String> map);
+    public int addAuthencationInfo(Map<String, String> map);
 
 }
