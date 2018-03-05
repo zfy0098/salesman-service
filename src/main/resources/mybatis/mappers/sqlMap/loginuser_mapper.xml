@@ -43,7 +43,7 @@
 
 	<!-- 查询某一个商户为业务员制造的收益 -->
 	<select id="queryMerchantTotalAmount" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		select ifnull(sum(DistributeProfit)+sum(Profit) , '0') as Amount from tab_salesman_profit where TradeUserID in (
+		select ifnull(sum(DistributeProfit),0) + ifnull(sum(Profit) , 0 )  as Amount from tab_salesman_profit where TradeUserID in (
 		select ID from tab_loginuser where (ThreeLevel=#{merchantID} or TwoLevel=#{merchantID}
 		or ID=#{merchantID})) and SalesManID=#{UserID}
 	</select>

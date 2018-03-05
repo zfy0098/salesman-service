@@ -2,16 +2,13 @@ package com.rhjf.salesman.service.datasource;
 
 
 /**
-* @author zzg
-*
-* @version 1.0
-*
-* 创建时间：2017年6月27日 下午6:44:45
-*
-* @ClassName 类名称
-*
-* @Description 类描述
-*/
+ * @author zzg
+ * @version 1.0
+ *          <p>
+ *          创建时间：2017年6月27日 下午6:44:45
+ * @ClassName 类名称
+ * @Description 类描述
+ */
 public class DataSourceContextHolder {
 
     public static final String EMOVE = "emove";

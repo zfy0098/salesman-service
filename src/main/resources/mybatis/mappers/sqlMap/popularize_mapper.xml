@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rhjf.salesman.service.mapper.PopularizeMapper">
+
+
+	<select id="popularizeList" parameterType="java.lang.String" resultType="java.util.Map">
+			select * from tab_popularize where (devicetype=#{deviceType} or devicetype='') and active=1
+	</select>
+
+</mapper>

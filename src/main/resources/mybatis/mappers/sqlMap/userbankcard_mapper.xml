@@ -7,10 +7,10 @@
 
 	<insert id="addMerchantBankCardInfo" parameterType="com.rhjf.account.modle.domain.salesman.UserBankCard">
 		insert into tab_pay_userbankcard (ID,UserID,AccountName,AccountNo,BankBranch,BankProv,BankCity,
-		BankCode,BankName,SettleCreditCard,SettleBankType) 
+		BankCode,BankName,SettleCreditCard,SettleBankType , PayerPhone)
 		values 
 		(#{ID},#{userID},#{accountName},#{accountNo},#{bankBranch},#{bankProv},#{bankCity},
-		#{bankCode},#{bankName},#{settleCreditCard},#{settleBankType})
+		#{bankCode},#{bankName},#{settleCreditCard},#{settleBankType} , #{payerPhone})
 	</insert>
 
 

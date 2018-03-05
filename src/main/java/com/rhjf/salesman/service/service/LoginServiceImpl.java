@@ -2,7 +2,6 @@ package com.rhjf.salesman.service.service;
 
 import com.rhjf.account.modle.domain.salesman.LoginUser;
 import com.rhjf.account.modle.domain.salesman.ParamterData;
-import com.rhjf.account.modle.domain.salesman.Salesman;
 import com.rhjf.account.modle.domain.salesman.TermKey;
 import com.rhjf.salesman.core.constants.Constants;
 import com.rhjf.salesman.core.constants.RespCode;
@@ -14,11 +13,7 @@ import com.rhjf.salesman.core.util.UtilsConstant;
 import com.rhjf.salesman.service.mapper.*;
 import com.rhjf.salesman.service.util.MakeCipherText;
 import com.rhjf.salesman.service.util.SignKey;
-import com.rhjf.salesman.service.util.auth.AuthService;
-import com.rhjf.salesman.service.util.auth.Author;
 import com.rhjf.salesman.service.util.email.SendMail;
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-import net.sf.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Transactional
@@ -56,6 +50,7 @@ public class LoginServiceImpl implements LoginService{
 
 
 	/**  获取用户信息  **/
+	@Override
 	public LoginUser userInfo(String LoginID){
 
 		Map<String,String> map = new HashMap<String,String>();
@@ -65,6 +60,7 @@ public class LoginServiceImpl implements LoginService{
 	
 	
 	/** 获取用户秘钥 **/
+	@Override
 	public TermKey userTermkey(String userID){
 		return termkeyMapper.queryUserKey(userID);
 	}
@@ -184,6 +180,7 @@ public class LoginServiceImpl implements LoginService{
 	 * @param paramter
 	 * @return
 	 */
+	@Override
 	public ParamterData verifyPassword(LoginUser user  , ParamterData paramter){
 
 		MakeCipherText makeCipherText = new MakeCipherText();
@@ -208,6 +205,7 @@ public class LoginServiceImpl implements LoginService{
 	/**
 	 *   向邮箱发送验证码
 	 */
+	@Override
 	public ParamterData verificationEmail(LoginUser  user , ParamterData paramterData){
 
 
@@ -226,13 +224,22 @@ public class LoginServiceImpl implements LoginService{
 			return paramterData;
 		}
 
+
+//		String channelName = "云合付";
+
+//		String channelName = "爱码付";
+
+		String channelName = "哆米付";
+
 		String content = "<div style='width:500px; height:300px; border-bottom:1px dashed #999; margin:0 auto; padding-right:20px; font-family: '宋体';'>" +
-				"<h1 style='font-size:20px;'>亲爱的用户:</h1><p style='line-height: 36px; margin:42px 0; font-size:15px;'>您好！感谢您使用爱码付，您正在进行邮箱验证，本次请求的验证码为:<br>" +
-				"<span style='font-size:28px; color: #D86640;'>"+smsCode+"</span>(为了保障您账号的安全性，请在1小时内完成验证)</p><h4 style='font-size:15px;'>爱码付团队</h4>" +
+				"<h1 style='font-size:20px;'>亲爱的用户:</h1><p style='line-height: 36px; margin:42px 0; font-size:15px;'>您好！感谢您使用" +channelName+ "，您正在进行邮箱验证，本次请求的验证码为:<br>" +
+				"<span style='font-size:28px; color: #D86640;'>"+smsCode+"</span>(为了保障您账号的安全性，请在1小时内完成验证)</p><h4 style='font-size:15px;'>" +channelName+ "团队</h4>" +
 				"<h4 style='margin:28px 0;font-size:15px; '>"+ DateUtil.getNowTime("yyyy")+ "年" +DateUtil.getNowTime("MM")+ "月"+DateUtil.getNowTime("dd")+"日</h4></div>";
 
+
+
 		try {
-			SendMail.sendMail("【爱码付团队】 邮箱验证码", content, new String[]{user.getLoginID()} , null , null);
+			SendMail.sendMail("【"+channelName+"团队】 邮箱验证码", content, new String[]{user.getLoginID()} , null , null);
 
 			paramterData.setRespCode(RespCode.SUCCESS[0]);
 			paramterData.setRespDesc(RespCode.SUCCESS[1]);
@@ -247,6 +254,7 @@ public class LoginServiceImpl implements LoginService{
 
 
 	/** 忘记密码修改密码 **/
+	@Override
 	public ParamterData forgetpwd(LoginUser user  , ParamterData paramter){
 
 		MakeCipherText makeCipherText = new MakeCipherText();
@@ -322,6 +330,7 @@ public class LoginServiceImpl implements LoginService{
 
 	
 	/**  根据银行卡号获取银行名称 **/
+	@Override
 	public ParamterData getBankName(LoginUser user , ParamterData paramter){
 
 
@@ -334,6 +343,7 @@ public class LoginServiceImpl implements LoginService{
 
 
 	/** 某一个商户为业务员制造的收益  **/
+	@Override
 	public ParamterData queryMerchantTotalAmount(LoginUser user, ParamterData paramter){
 
 		Map<String,String> map = new HashMap<>();

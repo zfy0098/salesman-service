@@ -19,4 +19,7 @@ public interface PayMerchantMapper {
      * @return
      */
     public int saveMerchantInfo(List<PayMerchant> list);
+
+
+
 }

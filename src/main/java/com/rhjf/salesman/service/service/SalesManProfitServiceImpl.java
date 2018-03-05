@@ -5,9 +5,9 @@ import com.rhjf.account.modle.domain.salesman.ParamterData;
 import com.rhjf.salesman.core.constants.RespCode;
 import com.rhjf.salesman.core.service.SalesManProfitService;
 import com.rhjf.salesman.core.util.DateUtil;
+import com.rhjf.salesman.core.util.UtilsConstant;
 import com.rhjf.salesman.service.mapper.SalesManProfitMapper;
 import com.rhjf.salesman.service.mapper.SalesmanMonthProfitMapper;
-import com.sun.org.apache.regexp.internal.RE;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.slf4j.Logger;
@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.xml.sax.helpers.ParserAdapter;
 
 import java.util.*;
 
@@ -43,6 +42,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
      * @param paramter
 -     * @return
      */
+    @Override
     public ParamterData profitDetailByDay(LoginUser user, ParamterData paramter) {
 
         String toDay = paramter.getTradeDate();
@@ -66,7 +66,12 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
      *
      * @return
      */
+    @Override
     public ParamterData profitDetailByToDayCurve(LoginUser user, ParamterData paramter){
+
+
+        log.info("用户：" + user.getLoginID() + "查询收益折线数据");
+
 
         String tradeDate = paramter.getTradeDate();
         StringBuffer sbf = new StringBuffer(tradeDate);
@@ -95,6 +100,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
             Map<String, String> salesManProfit = salesManProfitMapper.profitTotalByDay(map);
 
+            log.info("查询日期：" + sbf.toString() + " 的收益情况，" + salesManProfit.toString());
 
             if(salesManProfit == null || salesManProfit.isEmpty()){
                 salesManProfit = new HashMap<>();
@@ -116,9 +122,21 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
             log.info("折线数据:" + JSONArray.fromObject(list).toString());
 
-            paramter.setDistributeProfit(String.valueOf(salesManProfit.get("distributeProfit")));
-            paramter.setProfit(String.valueOf(salesManProfit.get("profit")));
-            paramter.setProfitTotal(String.valueOf(salesManProfit.get("amount")));
+            paramter.setDistributeProfit(UtilsConstant.ObjToStr(salesManProfit.get("distributeProfit")));
+
+            String profit = "0.0";
+            if(salesManProfit.get("profit") != null){
+                profit =  String.valueOf(salesManProfit.get("profit"));
+            }
+
+            paramter.setProfit(profit);
+
+            String profitTotal = "0.0";
+            if(salesManProfit.get("amount")!= null){
+                profitTotal = String.valueOf(salesManProfit.get("amount"));
+            }
+
+            paramter.setProfitTotal(profitTotal);
 
             paramter.setList(JSONArray.fromObject(list).toString());
             paramter.setRespCode(RespCode.SUCCESS[0]);
@@ -140,6 +158,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
      * @param user
      * @return
      */
+    @Override
     public ParamterData monthlyReport(LoginUser user, ParamterData paramterData) {
 
         log.info("用户：" + user.getLoginID() + "查询收益月报数据");
@@ -190,6 +209,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
 
 
     /** 月报详细数据 **/
+    @Override
     public ParamterData monthlyReportDetailed(LoginUser user , ParamterData paramter){
 
         String tradeDate = paramter.getTradeDate();
@@ -225,6 +245,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
      * @param paramterData
      * @return
      */
+    @Override
     public ParamterData monthlyReportCurve(LoginUser user,ParamterData paramterData){
 
 
@@ -237,7 +258,7 @@ public class SalesManProfitServiceImpl implements SalesManProfitService {
             stringBuffer.insert(4, "0");
         }
 
-        Map<String,String> map = new HashMap<>();
+        Map<String,String> map = new HashMap<>(16);
         map.put("SalesManID" , user.getID());
         map.put("ProfitMonth" , stringBuffer.toString());
 

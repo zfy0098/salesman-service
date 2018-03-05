@@ -10,7 +10,7 @@
 	<select id="monthlyReport" parameterType="java.lang.String" resultType="java.util.HashMap">
 
 		select left(ProfitMonth ,4 ) as year , SUBSTR(ProfitMonth FROM 5 FOR 2) as   month  ,  CONCAT(TotalProfit, '') as amount,
-		 Open  from tab_salesman_monthprofit  where SalesManID=#{SalesManID}
+		 Open  from tab_salesman_monthprofit  where SalesManID=#{SalesManID} order by ProfitMonth desc
 	</select>
 
 

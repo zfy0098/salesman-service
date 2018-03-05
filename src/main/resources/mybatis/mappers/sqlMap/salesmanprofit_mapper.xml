@@ -7,8 +7,8 @@
 
 	<!--  查询业务员的总收益 -->
 	<select id="profitTotal" parameterType="java.lang.String" resultType="java.util.HashMap" >
-		  select concat(ifnull(sum(DistributeProfit) , 0),'') as distributeProfit , concat(ifnull(sum(Profit) , 0),'') as profit ,
-		   concat(ifnull(sum(DistributeProfit),0) + ifnull(sum(Profit),0) , '') as totalProfit
+		  select ifnull(sum(DistributeProfit) , 0) as distributeProfit , ifnull(sum(Profit) , 0) as profit ,
+		   ifnull(sum(DistributeProfit),0) + ifnull(sum(Profit),0)  as totalProfit
 		  from tab_salesman_profit  where SalesManID=#{salesManID}
 	</select>
 
@@ -16,7 +16,7 @@
 
 	<!-- 查询某天收益列表 -->
 	<select id="profitDetailByDay" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		select tl.MerchantName , tpo.Amount , Profit , DistributeProfit ,Profit+DistributeProfit as profitTotal , DATE_FORMAT(CONCAT(LocalDate,LocalTimes),'%Y-%m-%d %H:%m:%s') as tradeTime
+		select tl.MerchantName , tpo.Amount , Profit , DistributeProfit ,Profit+DistributeProfit as profitTotal , DATE_FORMAT(CONCAT(LocalDate,LocalTimes),'%Y-%m-%d %H:%i:%s') as tradeTime
 		from tab_loginuser as tl INNER JOIN tab_pay_order as tpo on tl.ID=tpo.UserID
 		INNER JOIN tab_salesman_profit as tsp on tl.SalesManID=tsp.SalesManID and tsp.TradeID=tpo.ID
 		 where tpo.PayRetCode='0000' and tsp.SalesManID=#{salesManID} and tpo.LocalDate=#{toDay} and Profit+DistributeProfit > 0 order by tradeTime DESC
@@ -26,7 +26,7 @@
 
 	<!--  查询某天收益总和 -->
 	<select id="profitTotalByDay" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-		select CONCAT(DATE_FORMAT(TradeDate,'%Y%m%d'),'') as  LocalDate , CONCAT(sum(DistributeProfit)+sum(Profit) , '') as amount
+		select CONCAT(DATE_FORMAT(TradeDate,'%Y%m%d'),'') as  LocalDate ,  ifnull(sum(DistributeProfit)+sum(Profit) , 0)  as amount
 		, sum(DistributeProfit) as  distributeProfit  , sum(Profit)  as profit
  		from tab_salesman_profit where date(TradeDate)=#{tradeDate} and SalesManID=#{salesManID};
 	</select>
@@ -42,7 +42,7 @@
 
 	<!-- 查询业务员月收益总数 -->
 	<select id="profitMonth" parameterType="java.util.Map" resultType="java.util.Map">
-		select  concat(ifnull(sum(Profit+DistributeProfit) , 0),'') as totalProfit
+		select  ifnull(sum(Profit+DistributeProfit) , 0) as totalProfit
 		from tab_loginuser as tl INNER JOIN tab_pay_order as tpo on tl.ID=tpo.UserID
 		INNER JOIN tab_salesman_profit as tsp on tl.SalesManID=tsp.SalesManID and tsp.TradeID=tpo.ID
 		 where tpo.PayRetCode='0000' and tsp.SalesManID=#{salesManID} and left(LocalDate,6)=#{tradeDate}
@@ -52,7 +52,7 @@
 	<!-- 月报详细数据 -->
 	<select id="monthlyReportDetailed" parameterType="java.util.Map" resultType="java.util.HashMap">
 		select tl.MerchantName , tpo.Amount , Profit , DistributeProfit ,Profit+DistributeProfit as profitTotal ,
-		DATE_FORMAT(CONCAT(LocalDate,LocalTimes),'%Y-%m-%d %H:%m:%s') as tradeTime
+		DATE_FORMAT(CONCAT(LocalDate,LocalTimes),'%Y-%m-%d %H:%i:%s') as tradeTime
 		from tab_loginuser as tl INNER JOIN tab_pay_order as tpo on tl.ID=tpo.UserID
 		INNER JOIN tab_salesman_profit as tsp on tl.SalesManID=tsp.SalesManID and tsp.TradeID=tpo.ID
 		 where tpo.PayRetCode='0000' and tsp.SalesManID=#{salesManID} and left(tpo.LocalDate,6)=#{date} and Profit+DistributeProfit>0 order by tradeTime desc

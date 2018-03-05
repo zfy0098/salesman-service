@@ -20,10 +20,10 @@
 	<dubbo:annotation package="com.rhjf.salesman.core.service"/> 
 	
 	<!-- 声明需要暴露的服务接口    timeout="100000" version="1.0"-->
-	
+
 	<!-- 用户管理接口 -->
 	<dubbo:service interface="com.rhjf.salesman.core.service.LoginService" ref="loginService"  version="1.0" />
-  	<bean id="loginService" class="com.rhjf.salesman.service.service.LoginServiceImpl"></bean> 
+	<bean id="loginService" class="com.rhjf.salesman.service.service.LoginServiceImpl"></bean>
 
 
 	<!-- 业务员基本信息 -->
@@ -84,4 +84,10 @@
 	<!--  提现功能 -->
 	<dubbo:service interface="com.rhjf.salesman.core.service.WithdrawService"  ref="withdrawService" version="1.0" />
 	<bean id="withdrawService" class="com.rhjf.salesman.service.service.WithdrawServiceImpl" ></bean>
+
+
+	<!--  推广图片接口 -->
+	<dubbo:service interface="com.rhjf.salesman.core.service.PopularizeService" ref="popularizeService" version="1.0"/>
+	<bean id="popularizeService" class="com.rhjf.salesman.service.service.PopularizeServiceImpl" ></bean>
+
 </beans>

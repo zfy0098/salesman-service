@@ -6,13 +6,14 @@ import com.rhjf.salesman.core.constants.RespCode;
 import com.rhjf.salesman.core.service.MerchantService;
 import com.rhjf.salesman.core.util.*;
 import com.rhjf.salesman.service.mapper.*;
-import com.rhjf.salesman.service.util.auth.AuthService;
-import com.rhjf.salesman.service.util.auth.Author;
+import com.rhjf.salesman.service.util.AuthUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
+import org.omg.CORBA.PRIVATE_MEMBER;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
@@ -22,6 +23,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
+ * @author hadoop
+ *
  * Created by hadoop on 2017/8/11.
  */
 @Transactional
@@ -58,6 +61,36 @@ public class MerchantServiceImpl implements MerchantService {
     @Autowired
     private UserPropertiesMapper userPropertiesMapper;
 
+
+    @Autowired
+    private AuthUtil authUtil;
+
+
+    @Value("${imgPath}")
+    private String imgPath;
+
+    @Value("${imgUrl}")
+    private String imgUrl;
+
+    @Value("${REPORT_URL}")
+    private String reportURI;
+
+
+
+    @Value("${REPORT_CHANNELNO}")
+    private String channelNo;
+
+    @Value("${REPORT_CHANNELNAME}")
+    private String channelName;
+
+    @Value("${REPORT_DES3_KEY}")
+    private String channelDES3;
+
+    @Value("${REPORT_SIGN_KEY}")
+    private String channelSignKey;
+
+
+
     /**
      * 业务员录入商户
      */
@@ -73,7 +106,8 @@ public class MerchantServiceImpl implements MerchantService {
             /**
              *    用户银行卡号鉴权
              */
-            if(authencation(paramter.getName() , paramter.getIDCard() , paramter.getBankCardNo())){
+            boolean authBlag = authUtil.authen( authenticationMapper ,paramter.getName() , paramter.getIDCard() , paramter.getBankCardNo() , paramter.getPhoneNumber());
+            if(authBlag){
 
                 log.info("商户：" + paramter.getMerchantLoginID() + "信用鉴权没有通过 , 卡号:" + paramter.getBankCardNo());
                 paramter.setRespCode(RespCode.BankCardInfoErroe[0]);
@@ -183,6 +217,8 @@ public class MerchantServiceImpl implements MerchantService {
             bankCard.setBankProv(paramter.getBankProv());
             bankCard.setBankCity(paramter.getBankCity());
             bankCard.setSettleBankType(bankType);
+            bankCard.setPayerPhone(paramter.getPhoneNumber());
+
 
             log.info("添加商户" + paramter.getMerchantLoginID() + "结算卡信息:");
 
@@ -245,12 +281,17 @@ public class MerchantServiceImpl implements MerchantService {
             }
 
 
+            String state = merchantInfo.getState();
+            if(UtilsConstant.strIsEmpty(state)){
+                state = merchantInfo.getCity();
+            }
+
             Map<String, Object> merchantInMap = new TreeMap<String, Object>();
-            merchantInMap.put("channelName", Constants.REPORT_CHANNELNAME);
-            merchantInMap.put("channelNo", Constants.REPORT_CHANNELNO);
+            merchantInMap.put("channelName",channelName);
+            merchantInMap.put("channelNo", channelNo);
             merchantInMap.put("merchantName", merchantInfo.getMerchantName());
             merchantInMap.put("merchantBillName", merchantInfo.getMerchantBillName());
-            merchantInMap.put("installProvince", merchantInfo.getState());
+            merchantInMap.put("installProvince", state);
             merchantInMap.put("installCity", merchantInfo.getCity());
             merchantInMap.put("installCounty", merchantInfo.getRegion());
             merchantInMap.put("operateAddress", merchantInfo.getAddress());
@@ -259,7 +300,13 @@ public class MerchantServiceImpl implements MerchantService {
             merchantInMap.put("legalPersonName", merchantInfo.getName());
             merchantInMap.put("legalPersonID", merchantInfo.getIDCardNo());
             merchantInMap.put("merchantPersonName", merchantInfo.getName());
-            merchantInMap.put("merchantPersonPhone", merchantInfo.getLoginID());
+
+            String payerPhone = paramter.getPhoneNumber();
+            if(!UtilsConstant.strIsEmpty(payerPhone)){
+                payerPhone =  merchantInfo.getLoginID();
+            }
+
+            merchantInMap.put("merchantPersonPhone",payerPhone);
 
             merchantInMap.put("wxType", wxmcccNumber);
             merchantInMap.put("wxT1Fee", wxUserConfig.getT1SaleRate() / 10.0);
@@ -271,7 +318,7 @@ public class MerchantServiceImpl implements MerchantService {
 
             merchantInMap.put("bankType", bankType);
             merchantInMap.put("accountName", bankCard.getAccountName());
-            merchantInMap.put("accountNo", DESUtil.encode(Constants.REPORT_DES3_KEY, bankCard.getAccountNo()));
+            merchantInMap.put("accountNo", DESUtil.encode(channelDES3, bankCard.getAccountNo()));
             merchantInMap.put("bankName", bankCode.getBankName());
             merchantInMap.put("bankProv", bankCard.getBankProv());
             merchantInMap.put("bankCity", bankCard.getBankCity());
@@ -279,9 +326,9 @@ public class MerchantServiceImpl implements MerchantService {
             merchantInMap.put("bankCode", bankCard.getBankCode());
 
 
-            log.info("需要签名的的数据：" + JSONObject.fromObject(merchantInMap).toString() + Constants.REPORT_SIGN_KEY);
+            log.info("需要签名的的数据：" + JSONObject.fromObject(merchantInMap).toString() + channelSignKey);
 
-            String sign = MD5.sign(JSONObject.fromObject(merchantInMap).toString() + Constants.REPORT_SIGN_KEY, "utf-8");
+            String sign = MD5.sign(JSONObject.fromObject(merchantInMap).toString() + channelSignKey, "utf-8");
             merchantInMap.put("sign", sign.toUpperCase());
 
 
@@ -291,7 +338,7 @@ public class MerchantServiceImpl implements MerchantService {
             JSONObject respJS = null;
             String respCode = null;
             try {
-                String content = HttpClient.post(Constants.REPORT_URL, merchantInMap, null);
+                String content = HttpClient.post(reportURI , merchantInMap, null);
                 log.info("用户" + merchantInfo.getLoginID() + "入网响应报文:" + content);
 
                 respJS = JSONObject.fromObject(content);
@@ -385,11 +432,10 @@ public class MerchantServiceImpl implements MerchantService {
     /**
      * 上传商户照片
      **/
+    @Override
     public ParamterData updatePhoto(LoginUser user, ParamterData paramterData) {
 
 
-        String imgPath = Constants.imgPath;
-        String imgUrl = Constants.imgUrl;
 
         /** 手持身份证照片  **/
         String handheldIDPhoto = paramterData.getHandheldIDPhoto();
@@ -562,6 +608,7 @@ public class MerchantServiceImpl implements MerchantService {
      * @param paramter
      * @return
      */
+    @Override
     public ParamterData updateMerchantLevel(LoginUser user, ParamterData paramter) {
 
 
@@ -677,6 +724,7 @@ public class MerchantServiceImpl implements MerchantService {
     /**
      * 为商户添加信用卡
      **/
+    @Override
     public ParamterData addCreditCardNo(LoginUser user, ParamterData paramter) {
 
         //  查询商户信息
@@ -693,7 +741,7 @@ public class MerchantServiceImpl implements MerchantService {
         /**
          *  用户信用卡 卡号鉴权
          */
-        boolean flag = authencation(userBankCard.getAccountName() , user2.getIDCardNo() ,settleCreditCard);
+        boolean flag = authUtil.authen( authenticationMapper , userBankCard.getAccountName() , user2.getIDCardNo() ,settleCreditCard  , "");
         if(flag){
             log.info("商户：" + paramter.getMerchantLoginID() + "信用鉴权没有通过 , 卡号:" + settleCreditCard);
             paramter.setRespCode(RespCode.BankCardInfoErroe[0]);
@@ -714,47 +762,5 @@ public class MerchantServiceImpl implements MerchantService {
 
 
 
-    public  boolean authencation( String name , String IDCardNo ,String bankCardNo){
-        Map<String, String> bankAuthencationMan = authenticationMapper.bankAuthenticationInfo(bankCardNo);
-        if (bankAuthencationMan == null || bankAuthencationMan.isEmpty()) {
 
-            log.info("未查到卡号：" + bankCardNo + "的鉴权信息");
-
-            Map<String, String> authMap = new HashMap<String, String>();
-            AuthService authService = new AuthService();
-            authMap.put("accName", name);
-            authMap.put("cardNo", bankCardNo);
-            authMap.put("certificateNo", IDCardNo);
-            Map<String, String> reqMap = authService.authKuai(authMap);
-
-            log.info("新商户：鉴权，" + authMap.toString() + "鉴权结果:" + reqMap.toString());
-            if (!reqMap.get("respCode").equals(Author.SUCESS_CODE)) {
-                log.info("业务员新增用户： 银行信息鉴权没有通过");
-
-                return true;
-            } else {
-
-                //  鉴权通过 将银行卡鉴权信息保存数据库
-                Map<String, String> bankInfo = new HashMap<>();
-                bankInfo.put("ID", UtilsConstant.getUUID());
-                bankInfo.put("IdNumber", IDCardNo);
-                bankInfo.put("RealName", name);
-                bankInfo.put("BankCardNo", bankCardNo);
-                bankInfo.put("RespCode", "00");
-                bankInfo.put("RespDesc", reqMap.get("respMsg"));
-                log.info("鉴权通过。将" + bankCardNo +"保存数据库");
-
-                authenticationMapper.addAuthencationInfo(bankInfo);
-
-            }
-        } else {
-            if (!name.equals(bankAuthencationMan.get("RealName")) || !IDCardNo.equals(bankAuthencationMan.get("IdNumber"))) {
-                log.info("业务员新增用户：银行信息鉴权没有通过");
-                return true;
-            }else{
-                log.info("卡号：" + bankCardNo + "查询到历史鉴权数据,并且信息一致");
-            }
-        }
-        return false;
-    }
 }

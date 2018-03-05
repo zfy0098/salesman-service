@@ -57,7 +57,6 @@
 	</bean>
 
 
-
 	<!-- production环境 -->
 	<beans profile="product">
 
@@ -66,6 +65,9 @@
 				<list>
 					<value>classpath:properties/application.product.properties</value>
 				</list>
+			</property>
+			<property name="fileEncoding">
+				<value>utf-8</value>
 			</property>
 		</bean>
 	</beans>
@@ -92,6 +94,31 @@
 		</bean>
 	</beans>
 
+
+	<!-- oem环境 -->
+	<beans profile="oem">
+
+		<bean id="propertyConfigurer"  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+			<property name="locations">
+				<list>
+					<value>classpath:properties/application.oem.properties</value>
+				</list>
+			</property>
+		</bean>
+	</beans>
+
+
+	<!-- oem环境 -->
+	<beans profile="duomi">
+
+		<bean id="propertyConfigurer"  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+			<property name="locations">
+				<list>
+					<value>classpath:properties/application.duomi.properties</value>
+				</list>
+			</property>
+		</bean>
+	</beans>
 
 
 

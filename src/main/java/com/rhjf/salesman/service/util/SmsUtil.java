@@ -7,6 +7,10 @@ import java.util.HashMap;
 import java.util.Set;
 
 
+/**
+ *
+ *  @author hadoop
+ */
 public class SmsUtil {
 	
 	public static JSONObject sendSMS(String phone,String smsCode,String moudle,String content,String APPID){
@@ -28,8 +32,8 @@ public class SmsUtil {
 		//*参数顺序：第一个参数是ACOUNT SID，第二个参数是AUTH TOKEN。                   *
 		//*******************************************************************************
 		restAPI.setAccount("8a216da857ad33250157b252baa50407", "fa3388220f29470c844211466a389e20");
-		
-		
+
+
 		//******************************注释*********************************************
 		//*初始化应用ID                                                                 *
 		//*测试开发可使用“测试Demo”的APP ID，正式上线需要使用自己创建的应用的App ID     *

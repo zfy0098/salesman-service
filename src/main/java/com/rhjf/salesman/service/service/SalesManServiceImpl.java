@@ -5,20 +5,17 @@ import com.rhjf.account.modle.domain.salesman.ParamterData;
 import com.rhjf.account.modle.domain.salesman.Salesman;
 import com.rhjf.salesman.core.constants.RespCode;
 import com.rhjf.salesman.core.service.SalesManService;
-import com.rhjf.salesman.core.util.UtilsConstant;
 import com.rhjf.salesman.service.mapper.AuthenticationMapper;
 import com.rhjf.salesman.service.mapper.BankCodeMapper;
 import com.rhjf.salesman.service.mapper.SalesmanMapper;
 import com.rhjf.salesman.service.mapper.UserBankCardMapper;
-import com.rhjf.salesman.service.util.auth.AuthService;
-import com.rhjf.salesman.service.util.auth.Author;
+import com.rhjf.salesman.service.util.AuthUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.Map;
 @Transactional
 @Service("salesmanService")
@@ -38,6 +35,9 @@ public class SalesManServiceImpl implements SalesManService {
     @Autowired
     private AuthenticationMapper authenticationMapper;
 
+    @Autowired
+    private AuthUtil authUtil;
+
 
     /**
      * 业务员修改结算信息
@@ -54,7 +54,7 @@ public class SalesManServiceImpl implements SalesManService {
 
         Salesman salesman = salesmanMapper.salesmanInfo(user.getSalesManID());
 
-        boolean flag = authencation(salesman.getSalesName() , salesman.getSalesCardID() ,  paramter.getBankCardNo());
+        boolean flag = authUtil.authen( authenticationMapper , salesman.getSalesName() , salesman.getSalesCardID() ,  paramter.getBankCardNo() , paramter.getPhoneNumber());
         if(flag){
             paramter.setRespCode(RespCode.BankCardInfoErroe[0]);
             paramter.setRespDesc(RespCode.BankCardInfoErroe[1]);
@@ -101,48 +101,6 @@ public class SalesManServiceImpl implements SalesManService {
             }
         }
         return paramter;
-    }
-
-
-    public  boolean authencation( String name , String IDCardNo ,String bankCardNo){
-        Map<String, String> bankAuthencationMan = authenticationMapper.bankAuthenticationInfo(bankCardNo);
-        if (bankAuthencationMan == null || bankAuthencationMan.isEmpty()) {
-
-            log.info("未查到卡号：" + bankCardNo + "的鉴权信息");
-
-            Map<String, String> authMap = new HashMap<String, String>();
-            AuthService authService = new AuthService();
-            authMap.put("accName", name);
-            authMap.put("cardNo", bankCardNo);
-            authMap.put("certificateNo", IDCardNo);
-            Map<String, String> reqMap = authService.authKuai(authMap);
-
-            log.info("新商户：鉴权，" + authMap.toString() + "鉴权结果:" + reqMap.toString());
-            if (!reqMap.get("respCode").equals(Author.SUCESS_CODE)) {
-                log.info("业务员新增用户： 银行信息鉴权没有通过");
-                return true;
-            } else {
-                //  鉴权通过 将银行卡鉴权信息保存数据库
-                Map<String, String> bankInfo = new HashMap<>();
-                bankInfo.put("ID", UtilsConstant.getUUID());
-                bankInfo.put("IdNumber", IDCardNo);
-                bankInfo.put("RealName", name);
-                bankInfo.put("BankCardNo", bankCardNo);
-                bankInfo.put("RespCode", "00");
-                bankInfo.put("RespDesc", reqMap.get("respMsg"));
-                log.info("鉴权通过。将" + bankCardNo +"保存数据库");
-
-                authenticationMapper.addAuthencationInfo(bankInfo);
-            }
-        } else {
-            if (!name.equals(bankAuthencationMan.get("RealName")) || !IDCardNo.equals(bankAuthencationMan.get("IdNumber"))) {
-                log.info("业务员新增用户：银行信息鉴权没有通过");
-                return true;
-            }else{
-                log.info("卡号：" + bankCardNo + "查询到历史鉴权数据,并且信息一致");
-            }
-        }
-        return false;
     }
 
 }
